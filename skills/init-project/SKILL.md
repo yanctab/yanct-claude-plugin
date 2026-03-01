@@ -57,7 +57,7 @@ Create .claude/CLAUDE.md with the following content exactly:
 
 @../CLAUDE.md
 
-@~/.claude/plugins/cache/claude-project-init/CLAUDE.md
+@~/.claude/plugins/cache/yanct-claude-plugin/CLAUDE.md
 ```
 
 The first import pulls in the root CLAUDE.md which is the source of
