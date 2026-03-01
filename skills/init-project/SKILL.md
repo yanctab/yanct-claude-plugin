@@ -94,10 +94,18 @@ will replace these stubs with real implementations.
 # Makefile — targets implemented by project type initialisation
 # Do not edit targets directly — run /init-<type> to implement them
 
-.PHONY: build lint test clean release package docs
+.PHONY: build fmt fmt-check lint test clean release package docs
 
 build:
 	@echo "build: not implemented — run /init-<type>"
+	@exit 1
+
+fmt:
+	@echo "fmt: not implemented — run /init-<type>"
+	@exit 1
+
+fmt-check:
+	@echo "fmt-check: not implemented — run /init-<type>"
 	@exit 1
 
 lint:
