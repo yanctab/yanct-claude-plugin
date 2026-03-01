@@ -41,7 +41,12 @@ Run each target and confirm it exits 0. If a target fails:
 
 ### Set up GitHub repository
 
-Ask the user:
+Run `git remote -v` to check if a remote is already configured.
+
+If a remote is already configured (set up by /init-rust-cli or manually),
+skip straight to enabling branch protection.
+
+If no remote exists, ask the user:
 ```
 Do you already have a GitHub repository for this project?
   1. Yes — I have created it, please configure the remote and push
@@ -64,7 +69,7 @@ Then create and push:
 gh repo create <name> --<visibility> --source=. --remote=origin --push
 ```
 
-After pushing, enable branch protection on main:
+After the remote is confirmed, enable branch protection on main:
 ```
 gh api repos/<owner>/<repo>/branches/main/protection \
   --method PUT \
@@ -75,22 +80,6 @@ gh api repos/<owner>/<repo>/branches/main/protection \
 ```
 
 Mark task complete only after remote is configured and main is pushed.
-
-### Push scaffold branch and open PR
-
-If a `chore/scaffold` branch exists locally, push it and open a PR:
-```
-git push -u origin chore/scaffold
-gh pr create \
-  --title "chore: scaffold project structure" \
-  --body "Initial scaffold — Makefile, Cargo project, CI workflows, packaging templates, and docs."
-```
-
-Show the PR URL to the developer and tell them:
-> Please review and merge the scaffold PR. Let me know when it is merged.
-
-Wait for the developer to confirm the PR is merged before continuing.
-Mark task complete only after the scaffold PR is merged (or if no scaffold branch existed).
 
 ### Verify CI pipeline is live
 
