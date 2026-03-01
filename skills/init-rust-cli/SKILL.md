@@ -11,15 +11,36 @@ You are orchestrating the Rust-specific scaffolding for a project that has
 already been initialised with /init-project. A Makefile and .claude/ directory
 already exist.
 
-Run the following agents in order. Each agent performs one phase and commits
-at the end. Wait for each agent to complete before starting the next.
-
 ## Step 1 — Read project context
 
 Read `.claude/CLAUDE.md`. If it does not exist, tell the user to run
 `/init-project` first and stop.
 
-## Step 2 — Run scaffolding agents in sequence
+## Step 2 — Initialise git repository
+
+If `.git` does not exist, run:
+```
+git init
+```
+
+Create the initial commit on main with the files init-project already created:
+```
+git add .
+git commit -m "chore: initial project structure"
+```
+
+If a git repo already exists with commits, skip this step.
+
+## Step 3 — Create scaffold branch
+
+```
+git checkout -b chore/scaffold
+```
+
+All subsequent commits from the scaffolding agents will land on this branch.
+Never commit directly to main.
+
+## Step 4 — Run scaffolding agents in sequence
 
 > Use the rust-cli-makefile agent to implement the Makefile targets
 
@@ -31,9 +52,10 @@ Read `.claude/CLAUDE.md`. If it does not exist, tell the user to run
 
 > Use the rust-cli-finalize agent to add docs, README, settings, and gitignore
 
-## Step 3 — Report
+## Step 5 — Report
 
 When all agents have completed, summarise:
 - What was created (one line per agent phase)
-- The 5 commits that were made
-- Next step: run `/tasks` to plan implementation
+- The commits that were made on `chore/scaffold`
+- Next step: run `/execute` — it will push the branch to GitHub, open a PR,
+  and wait for it to be merged before the Foundation verification begins
