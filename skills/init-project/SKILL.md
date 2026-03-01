@@ -37,16 +37,8 @@ Do not proceed until you have an answer.
 
 ## Step 3 — Create generic .claude/ structure
 
-Create the following in the project root. Do not create any
+Create `.claude/CLAUDE.md` in the project root. Do not create any
 language-specific files yet — that is handled in Step 5.
-
-```
-.claude/
-├── CLAUDE.md          # project-specific context (see template below)
-├── skills/            # empty, project-type skill will populate
-├── agents/            # empty, project-type skill will populate
-└── hooks/             # empty, project-type skill will populate
-```
 
 ### .claude/CLAUDE.md template
 
