@@ -115,14 +115,16 @@ welcome.
 
 ## Installation
 
-Push this repository to GitHub, then in any Claude Code session:
+In any Claude Code session, run these two commands:
 
 ```
-/plugin install <your-github-username>/yanct-claude-plugin
+/plugin marketplace add yanctab/yanct-claude-plugin
+/plugin install yanct-claude-plugin@yanct-claude-plugin
 ```
 
-Claude Code clones the plugin into `~/.claude/plugins/cache/` and registers
-all skills, agents, and hooks automatically.
+The first command registers the GitHub repository as a plugin marketplace.
+The second installs the plugin from it. All commands, agents, and hooks
+are then available in every future session.
 
 ---
 
