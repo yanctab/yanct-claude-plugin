@@ -10,6 +10,21 @@ allowed-tools: Bash(git *)
 You are creating a git commit. Follow these steps exactly.
 Never run `git commit` without going through this workflow.
 
+## Step 0 — Guard: never commit to main
+
+Run `git branch --show-current`.
+
+If the output is `main`, stop immediately and tell the developer:
+
+> You are on the `main` branch. Direct commits to main are not allowed.
+> Create a feature branch first:
+> ```
+> git checkout -b <type>/<short-description>
+> ```
+> Then re-run /commit.
+
+Do not proceed past this step until you are on a feature branch.
+
 ## Step 1 — Understand what changed
 
 Run `git diff --staged` to see staged changes.

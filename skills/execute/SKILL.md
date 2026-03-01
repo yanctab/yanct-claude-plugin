@@ -74,7 +74,23 @@ gh api repos/<owner>/<repo>/branches/main/protection \
   --field restrictions=null
 ```
 
-Mark task complete only after remote is configured and scaffold is pushed.
+Mark task complete only after remote is configured and main is pushed.
+
+### Push scaffold branch and open PR
+
+If a `chore/scaffold` branch exists locally, push it and open a PR:
+```
+git push -u origin chore/scaffold
+gh pr create \
+  --title "chore: scaffold project structure" \
+  --body "Initial scaffold — Makefile, Cargo project, CI workflows, packaging templates, and docs."
+```
+
+Show the PR URL to the developer and tell them:
+> Please review and merge the scaffold PR. Let me know when it is merged.
+
+Wait for the developer to confirm the PR is merged before continuing.
+Mark task complete only after the scaffold PR is merged (or if no scaffold branch existed).
 
 ### Verify CI pipeline is live
 
@@ -144,18 +160,33 @@ Stop and wait for the user to confirm before proceeding to implementation.
 
 Work through implementation tasks one at a time. For each task:
 
-### 1. Implement
+### 1. Create a task branch
+
+Before writing any code, create a branch for the task. Derive the name
+from the task title:
+- Type: use the task tag if present (`[feat]` → `feat`, `[fix]` → `fix`,
+  `[refactor]` → `refactor`); default to `feat` for implementation tasks
+- Slug: task title in lowercase with spaces replaced by hyphens,
+  special characters removed (max 40 chars)
+
+```
+git checkout -b <type>/<slug>
+```
+
+Never implement on main or on a previous task's branch.
+
+### 2. Implement
 
 Write the code for the task. Follow all rules in .claude/CLAUDE.md.
 Never call build tools directly — all checks go through make targets.
 
-### 2. Lint (automatic)
+### 3. Lint (automatic)
 
 The post-edit hook runs `make lint` automatically after each file edit.
 If the hook reports a failure, fix it before continuing.
 Do not manually run lint — the hook handles it.
 
-### 3. Test
+### 4. Test
 
 After implementation is complete, delegate to the test-runner agent:
 > Use the test-runner agent to run the test suite
@@ -164,7 +195,7 @@ If all tests pass: proceed to commit.
 If tests fail: fix the failures, then re-run the test-runner agent.
 Repeat until all tests pass.
 
-### 4. Commit
+### 5. Commit
 
 When the task passes all tests, invoke the commit skill:
 > /commit
@@ -172,9 +203,24 @@ When the task passes all tests, invoke the commit skill:
 Do not run git commit directly — always go through /commit to ensure
 the commit message follows the Conventional Commits format.
 
-### 5. Mark complete and continue
+### 6. Push and open PR
 
-Tick the task in TASKS.md and move to the next one.
+Push the branch and open a pull request:
+```
+git push -u origin <branch-name>
+gh pr create --title "<task title>" \
+  --body "Implements task: <task title>"
+```
+
+Show the PR URL to the developer and tell them:
+> Please review and merge the PR. Let me know when it is merged.
+
+Wait for the developer to confirm the PR is merged before continuing.
+
+### 7. Mark complete and continue
+
+Once the developer confirms the PR is merged, tick the task in TASKS.md
+and move to the next task — starting again from Step 1 with a new branch.
 
 ### Checkpoints
 
