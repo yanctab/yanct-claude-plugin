@@ -1,0 +1,11 @@
+{
+  "name": "yanct-claude-plugin",
+  "version": "0.1.0",
+  "description": "Repeatable, deterministic development workflow for new projects via a Makefile contract",
+  "author": {
+    "name": "yanctab"
+  },
+  "repository": "https://github.com/yanctab/yanct-claude-plugin",
+  "license": "MIT",
+  "keywords": ["workflow", "makefile", "rust", "cli", "ci-cd", "scaffold"]
+}
