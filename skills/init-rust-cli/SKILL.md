@@ -2,7 +2,7 @@
 name: init-rust-cli
 description: Implement Rust CLI scaffolding for a project initialised with /init-project. Implements Makefile targets, creates Cargo.toml, src/ structure, GitHub Actions, and packaging templates.
 disable-model-invocation: true
-allowed-tools: Read, Write, Bash(mkdir *), Bash(touch *), Bash(cargo init *), Bash(cargo add *)
+allowed-tools: Read, Write, Bash(mkdir *), Bash(touch *), Bash(cargo init *), Bash(cargo add *), Bash(chmod *), Bash(rustup *), Bash(git *)
 ---
 
 # Rust CLI Initialisation
@@ -443,7 +443,7 @@ Create `.claude/settings.json` to wire the post-edit lint hook:
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/plugins/cache/claude-project-init/hooks/post-edit-lint.sh"
+            "command": "~/.claude/plugins/cache/yanct-claude-plugin/hooks/post-edit-lint.sh"
           }
         ]
       }

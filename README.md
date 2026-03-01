@@ -1,4 +1,4 @@
-# claude-project-init
+# yanct-claude-plugin
 
 A Claude Code plugin that gives you a repeatable, deterministic development
 workflow for new projects. Instead of rediscovering the same decisions on
@@ -118,7 +118,7 @@ welcome.
 Push this repository to GitHub, then in any Claude Code session:
 
 ```
-/plugin install <your-github-username>/claude-project-init
+/plugin install <your-github-username>/yanct-claude-plugin
 ```
 
 Claude Code clones the plugin into `~/.claude/plugins/cache/` and registers
