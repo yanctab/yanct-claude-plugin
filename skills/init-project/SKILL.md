@@ -65,6 +65,26 @@ If there is anything project-specific that is not covered by either
 import — such as local paths, personal overrides, or toolchain notes —
 add it below the imports. Otherwise leave the file as the two imports only.
 
+### .claude/settings.json
+
+Create `.claude/settings.json` with permissions that allow the standard
+workflow tools without prompting:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Write",
+      "Bash(make *)",
+      "Bash(git *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)",
+      "Bash(cp *)"
+    ]
+  }
+}
+```
+
 ## Step 4 — Create Makefile with stub targets
 
 Create a Makefile with standard stub targets. The project-type skill

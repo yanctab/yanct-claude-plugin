@@ -110,8 +110,26 @@ Replace OWNER/REPO and description with actual values.
 
 ## Step 4 — Create .claude/settings.json
 
+Replace the settings.json created by init-project with the full version
+that adds rust-specific permissions and the post-edit lint hook:
+
 ```json
 {
+  "permissions": {
+    "allow": [
+      "Write",
+      "Bash(make *)",
+      "Bash(git *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)",
+      "Bash(cp *)",
+      "Bash(chmod *)",
+      "Bash(cargo init *)",
+      "Bash(cargo add *)",
+      "Bash(rustup *)",
+      "Bash(sudo apt-get *)"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
