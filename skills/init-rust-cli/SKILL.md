@@ -2,7 +2,7 @@
 name: init-rust-cli
 description: Implement Rust CLI scaffolding for a project initialised with /init-project. Implements Makefile targets, creates Cargo.toml, src/ structure, GitHub Actions, and packaging templates.
 disable-model-invocation: true
-allowed-tools: Read, Write, Bash(mkdir *), Bash(touch *), Bash(cargo init *), Bash(cargo add *), Bash(chmod *), Bash(rustup *), Bash(git *)
+allowed-tools: Read, Write, Bash(mkdir *), Bash(touch *), Bash(cargo init *), Bash(cargo add *), Bash(chmod *), Bash(rustup *), Bash(sudo apt-get *), Bash(git *)
 ---
 
 # Rust CLI Initialisation
