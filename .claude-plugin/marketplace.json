@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "yanct-claude-plugin",
+  "description": "Repeatable, deterministic development workflow for new projects via a Makefile contract",
+  "owner": {
+    "name": "yanctab"
+  },
+  "plugins": [
+    {
+      "name": "yanct-claude-plugin",
+      "description": "Repeatable, deterministic development workflow for new projects via a Makefile contract",
+      "source": ".",
+      "category": "development",
+      "homepage": "https://github.com/yanctab/yanct-claude-plugin"
+    }
+  ]
+}
