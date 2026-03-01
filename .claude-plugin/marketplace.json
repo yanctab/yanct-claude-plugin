@@ -9,7 +9,10 @@
     {
       "name": "yanct-claude-plugin",
       "description": "Repeatable, deterministic development workflow for new projects via a Makefile contract",
-      "source": ".",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/yanctab/yanct-claude-plugin.git"
+      },
       "category": "development",
       "homepage": "https://github.com/yanctab/yanct-claude-plugin"
     }
