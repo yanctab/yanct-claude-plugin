@@ -18,7 +18,7 @@ Overwrite the existing Makefile with the Rust implementation:
 ```makefile
 # Makefile
 
-.PHONY: build fmt fmt-check lint test clean release package docs
+.PHONY: build fmt fmt-check lint test clean release package publish docs
 
 BINARY := $(shell grep '^name' Cargo.toml | head -1 | sed 's/.*= "//' | sed 's/"//')
 VERSION := $(shell grep '^version' Cargo.toml | head -1 | sed 's/.*= "//' | sed 's/"//')
@@ -51,6 +51,9 @@ package:
 	$(MAKE) build
 	$(MAKE) build-deb
 	$(MAKE) build-aur
+
+publish:
+	cargo publish
 
 docs:
 	pandoc docs/man/$(BINARY).1.md -s -t man -o docs/man/$(BINARY).1
