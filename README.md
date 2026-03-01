@@ -1,4 +1,4 @@
-# claude-project-init
+# yanct-claude-plugin
 
 A Claude Code plugin that gives you a repeatable, deterministic development
 workflow for new projects. Instead of rediscovering the same decisions on
