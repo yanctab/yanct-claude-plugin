@@ -1,7 +1,7 @@
 ---
 name: rust-cli-finalize
 description: Creates docs, README, .claude/settings.json, and .gitignore for a Rust CLI project. Final step of rust-cli scaffolding.
-tools: Read, Write, Bash(mkdir *), Bash(rustup *), Bash(git *)
+tools: Read, Write, Bash(mkdir *), Bash(rustup *), Bash(sudo apt-get *), Bash(git *)
 ---
 
 You are finalising the rust-cli scaffold with docs, settings, and project housekeeping files.
@@ -128,10 +128,25 @@ Replace OWNER/REPO and description with actual values.
 }
 ```
 
-## Step 5 — Install musl target
+## Step 5 — Install local toolchain
 
-Run: `rustup target add x86_64-unknown-linux-musl`
-If rustup is not available, note it and skip — CI will handle it.
+Install everything needed so that `make build`, `make lint`, and `make package`
+all work locally before `/execute` is run.
+
+If rustup is not available, note it and skip each rustup step — CI will handle it.
+
+```
+rustup component add rustfmt clippy
+rustup target add x86_64-unknown-linux-musl
+```
+
+Install the musl linker if not already present:
+```
+sudo apt-get install -y musl-tools
+```
+
+If `apt-get` is not available (non-Debian system), note that `musl-tools` must
+be installed manually before `make build` will succeed.
 
 ## Step 6 — Create .gitignore
 
