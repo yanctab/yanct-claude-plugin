@@ -164,33 +164,19 @@ git checkout -b <type>/<slug>
 
 Never implement on main or on a previous task's branch.
 
-### 2. Implement
+### 2. Implement, test, and commit
 
-Write the code for the task. Follow all rules in .claude/CLAUDE.md.
-Never call build tools directly — all checks go through make targets.
+Delegate the full implement → lint → test → commit cycle to the
+task-runner agent, passing the task title:
 
-### 3. Lint (automatic)
+> Use the task-runner agent to implement task: "<task title>"
 
-The post-edit hook runs `make lint` automatically after each file edit.
-If the hook reports a failure, fix it before continuing.
-Do not manually run lint — the hook handles it.
+The task-runner keeps implementation details out of this context.
+It will read TASKS.md itself, implement the task, run tests, and
+commit — returning only a summary.
 
-### 4. Test
-
-After implementation is complete, delegate to the test-runner agent:
-> Use the test-runner agent to run the test suite
-
-If all tests pass: proceed to commit.
-If tests fail: fix the failures, then re-run the test-runner agent.
-Repeat until all tests pass.
-
-### 5. Commit
-
-When the task passes all tests, invoke the commit skill:
-> /commit
-
-Do not run git commit directly — always go through /commit to ensure
-the commit message follows the Conventional Commits format.
+If the task-runner reports test failures it could not resolve, stop
+and ask the developer before continuing.
 
 ### 6. Push and open PR
 
