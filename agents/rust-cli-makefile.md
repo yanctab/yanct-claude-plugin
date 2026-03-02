@@ -60,7 +60,8 @@ install: build
 
 ## setup - install all tools and dependencies required to work on this project
 setup:
-	rustup target add $(TARGET)
+	@command -v rustup >/dev/null 2>&1 || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+	@. "$$HOME/.cargo/env" && rustup toolchain install stable && rustup target add $(TARGET)
 	sudo apt-get install -y musl-tools pandoc
 
 ## release - tag the current version and push to trigger the release pipeline
