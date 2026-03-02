@@ -189,11 +189,10 @@ Omit any file from the `git add` that was not modified.
 
 Push and open a PR:
 ```
-git push -u origin chore/update-project-workflow
-gh pr create \
-  --title "chore: align project with current plugin workflow" \
-  --body "Applies missing workflow updates: <list items fixed>"
+git commit -m "chore: align project with current plugin workflow"
 ```
+
+> Use the pr-creator agent with title "chore: align project with current plugin workflow" and body "Applies missing workflow updates: <list items fixed>"
 
 Show the PR URL to the developer.
 
