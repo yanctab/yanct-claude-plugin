@@ -94,7 +94,7 @@ will replace these stubs with real implementations.
 # Makefile — targets implemented by project type initialisation
 # Do not edit targets directly — run /init-<type> to implement them
 
-.PHONY: build fmt fmt-check lint test clean release package publish docs help
+.PHONY: build fmt fmt-check lint test clean install release package publish docs help
 
 ## help - show available targets
 help:
@@ -130,6 +130,11 @@ clean:
 	@echo "clean: not implemented — run /init-<type>"
 	@exit 1
 
+## install - install the project locally
+install:
+	@echo "install: not implemented — run /init-<type>"
+	@exit 1
+
 ## release - tag and trigger the release pipeline
 release:
 	@echo "release: not implemented — run /init-<type>"
@@ -149,6 +154,11 @@ publish:
 docs:
 	@echo "docs: not implemented — run /init-<type>"
 	@exit 1
+
+# ── Project-specific targets ──────────────────────────────────────────────────
+# Add targets below that are unique to this project. They will appear in
+# `make help` automatically if you use the `## target - description` convention.
+# Examples: database migrations, code generation, deployment steps, dev server.
 ```
 
 ## Step 5 — Hand off to project-type skill
