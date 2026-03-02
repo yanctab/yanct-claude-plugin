@@ -45,9 +45,9 @@ Run `git branch --show-current` to confirm you are not on main.
 If you are on main, stop and report — the orchestrator must create a
 branch before invoking this agent.
 
-Stage all changes and draft a Conventional Commit message following the
-format in `.claude/CLAUDE.md`. Show the proposed message and wait for
-explicit approval before committing.
+Stage all changes and commit using a Conventional Commit message
+following the format in `.claude/CLAUDE.md`. Commit autonomously —
+the PR is the review gate, not the commit message.
 
 ```
 git add <files>
