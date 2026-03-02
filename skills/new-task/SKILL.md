@@ -1,11 +1,11 @@
 ---
-name: plan-task
+name: new-task
 description: Research a task idea, derive acceptance criteria and implementation approach, then append it as a detailed task entry to TASKS.md so /execute can pick it up.
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Agent
 ---
 
-# Task Planning
+# New Task
 
 You are researching a task idea and producing a well-specified task entry
 that gets appended to `TASKS.md`. You will **not** write any implementation
@@ -36,16 +36,16 @@ right `Depends on:` value.
 
 ---
 
-## Step 3 — Identify the task to plan
+## Step 3 — Identify the new task
 
 **If the user provided a task description as an argument** (e.g.
-`/plan-task "Add rate limiting to the API"`), use that description as
+`/new-task "Add rate limiting to the API"`), use that description as
 the task title. Proceed to Step 4.
 
 **If no argument was provided**, ask the user:
 
 ```
-What task would you like to plan?
+What task would you like to add?
 Describe it in one line (e.g. "Add rate limiting to the API"):
 ```
 
