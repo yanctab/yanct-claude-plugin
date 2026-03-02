@@ -18,7 +18,7 @@ Overwrite the existing Makefile with the Rust implementation:
 ```makefile
 # Makefile
 
-.PHONY: build fmt fmt-check lint test clean install release package publish docs help
+.PHONY: build fmt fmt-check lint test clean install setup release package publish docs help
 
 BINARY  := $(shell grep '^name'    Cargo.toml | head -1 | sed 's/.*= "//' | sed 's/"//')
 VERSION := $(shell grep '^version' Cargo.toml | head -1 | sed 's/.*= "//' | sed 's/"//')
@@ -57,6 +57,11 @@ clean:
 ## install - install the binary to $(PREFIX)/bin (default: /usr/local/bin)
 install: build
 	install -Dm755 target/$(TARGET)/release/$(BINARY) $(PREFIX)/bin/$(BINARY)
+
+## setup - install all tools and dependencies required to work on this project
+setup:
+	rustup target add $(TARGET)
+	sudo apt-get install -y musl-tools pandoc
 
 ## release - tag the current version and push to trigger the release pipeline
 release:

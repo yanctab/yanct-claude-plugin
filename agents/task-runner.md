@@ -24,13 +24,21 @@ understand the current structure. Never modify code you have not read.
 Write the code for the task. Follow all rules in `.claude/CLAUDE.md`.
 Use only `make` targets — never call build tools directly.
 
-## Step 4 — Lint (automatic)
+## Step 4 — Update make setup if needed
+
+If the task introduced any new external tool, system package, or
+toolchain component (anything not managed by the project's own package
+manager), add it to the `setup:` target in the Makefile now, before
+committing. This keeps `make setup` in sync with the actual project
+requirements at all times.
+
+## Step 5 — Lint (automatic)
 
 The post-edit hook runs `make lint` after each file edit.
 If the hook reports a failure, fix it before continuing.
 Do not manually run lint — the hook handles it.
 
-## Step 5 — Test
+## Step 6 — Test
 
 Run the test suite:
 > Use the test-runner agent to run the test suite
@@ -39,7 +47,7 @@ If all tests pass: proceed to commit.
 If tests fail: fix the failures and re-run the test-runner agent.
 Repeat until all tests pass.
 
-## Step 6 — Commit
+## Step 7 — Commit
 
 Run `git branch --show-current` to confirm you are not on main.
 If you are on main, stop and report — the orchestrator must create a
@@ -54,7 +62,7 @@ git add <files>
 git commit -m "<type>(<scope>): <summary>"
 ```
 
-## Step 7 — Report
+## Step 8 — Report
 
 Return a concise summary:
 - What was implemented
