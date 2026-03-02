@@ -87,9 +87,9 @@ Open a test PR:
 ```
 git checkout -b ci/verify-pipeline
 git commit --allow-empty -m "ci: verify pipeline is live"
-git push -u origin ci/verify-pipeline
-gh pr create --title "ci: verify pipeline is live" --body "Foundation verification PR — safe to merge or close"
 ```
+
+> Use the pr-creator agent with title "ci: verify pipeline is live" and body "Foundation verification PR — safe to merge or close"
 
 Use the ci-monitor agent to watch the pipeline:
 > Use the ci-monitor agent to watch the PR pipeline until complete
@@ -178,14 +178,9 @@ commit — returning only a summary.
 If the task-runner reports test failures it could not resolve, stop
 and ask the developer before continuing.
 
-### 6. Push and open PR
+### 6. Open PR
 
-Push the branch and open a pull request:
-```
-git push -u origin <branch-name>
-gh pr create --title "<task title>" \
-  --body "Implements task: <task title>"
-```
+> Use the pr-creator agent with title "<task title>" and body "Implements task: <task title>"
 
 Show the PR URL to the developer and tell them:
 > Please review and merge the PR. Let me know when it is merged.

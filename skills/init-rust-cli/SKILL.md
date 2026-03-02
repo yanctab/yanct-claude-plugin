@@ -91,13 +91,7 @@ git checkout -b chore/scaffold/makefile
 
 > Use the rust-cli-makefile agent to implement the Makefile targets
 
-Push and open a PR:
-```
-git push -u origin chore/scaffold/makefile
-gh pr create \
-  --title "chore(scaffold): implement Makefile targets" \
-  --body "Scaffold phase 1/5 — implements all Makefile targets for the Rust CLI project."
-```
+> Use the pr-creator agent with title "chore(scaffold): implement Makefile targets" and body "Scaffold phase 1/5 — implements all Makefile targets for the Rust CLI project."
 
 Show the PR URL. Tell the developer:
 > Please review and merge this PR. Let me know when it is merged.
@@ -115,13 +109,7 @@ git checkout -b chore/scaffold/cargo
 
 > Use the rust-cli-cargo agent to initialise the Cargo project and src/ structure
 
-Push and open a PR:
-```
-git push -u origin chore/scaffold/cargo
-gh pr create \
-  --title "chore(scaffold): initialise Cargo project and module stubs" \
-  --body "Scaffold phase 2/5 — cargo init, dependencies, and src/ module structure."
-```
+> Use the pr-creator agent with title "chore(scaffold): initialise Cargo project and module stubs" and body "Scaffold phase 2/5 — cargo init, dependencies, and src/ module structure."
 
 Show the PR URL. Tell the developer:
 > Please review and merge this PR. Let me know when it is merged.
@@ -139,13 +127,7 @@ git checkout -b chore/scaffold/ci
 
 > Use the rust-cli-ci agent to create the GitHub Actions workflows
 
-Push and open a PR:
-```
-git push -u origin chore/scaffold/ci
-gh pr create \
-  --title "ci(scaffold): add GitHub Actions CI and release workflows" \
-  --body "Scaffold phase 3/5 — ci.yml (PR checks) and release.yml (tag-triggered releases)."
-```
+> Use the pr-creator agent with title "ci(scaffold): add GitHub Actions CI and release workflows" and body "Scaffold phase 3/5 — ci.yml (PR checks) and release.yml (tag-triggered releases)."
 
 Show the PR URL. Tell the developer:
 > Please review and merge this PR. Let me know when it is merged.
@@ -163,13 +145,7 @@ git checkout -b chore/scaffold/packaging
 
 > Use the rust-cli-packaging agent to create the packaging templates and build scripts
 
-Push and open a PR:
-```
-git push -u origin chore/scaffold/packaging
-gh pr create \
-  --title "chore(scaffold): add packaging templates and build scripts" \
-  --body "Scaffold phase 4/5 — .deb control file, AUR PKGBUILD template, and build scripts."
-```
+> Use the pr-creator agent with title "chore(scaffold): add packaging templates and build scripts" and body "Scaffold phase 4/5 — .deb control file, AUR PKGBUILD template, and build scripts."
 
 Show the PR URL. Tell the developer:
 > Please review and merge this PR. Let me know when it is merged.
@@ -187,13 +163,7 @@ git checkout -b chore/scaffold/finalize
 
 > Use the rust-cli-finalize agent to add docs, README, settings, and gitignore
 
-Push and open a PR:
-```
-git push -u origin chore/scaffold/finalize
-gh pr create \
-  --title "chore(scaffold): add docs, settings, and gitignore" \
-  --body "Scaffold phase 5/5 — man page stub, README, .claude/settings.json, .gitignore, and local toolchain setup."
-```
+> Use the pr-creator agent with title "chore(scaffold): add docs, settings, and gitignore" and body "Scaffold phase 5/5 — man page stub, README, .claude/settings.json, .gitignore, and local toolchain setup."
 
 Show the PR URL. Tell the developer:
 > Please review and merge this PR. Let me know when it is merged.
