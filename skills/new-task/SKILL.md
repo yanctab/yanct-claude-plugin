@@ -36,27 +36,48 @@ right `Depends on:` value.
 
 ---
 
-## Step 3 — Identify the new task
+## Step 3 — Read existing plans
 
-**If the user provided a task description as an argument** (e.g.
-`/new-task "Add rate limiting to the API"`), use that description as
-the task title. Proceed to Step 4.
+Check whether `.claude/plans/` exists and list its contents. Read any
+plan files present — they may describe intended work that the new task
+should align with, extend, or avoid duplicating.
 
-**If no argument was provided**, ask the user:
+---
+
+## Step 4 — Clarify intent with the developer
+
+**Always ask for clarification before proceeding**, regardless of
+whether a description was supplied as an argument.
+
+If an argument was provided, treat it as a hint — not a complete
+specification. You may have misunderstood the developer's intent.
+Present your interpretation and ask them to confirm or correct it.
+
+Format the question as:
+
+```
+Task: "<your interpretation of the task title>"
+
+Is this what you had in mind, or would you like to adjust the scope,
+title, or focus before I research the codebase?
+```
+
+If no argument was provided, ask:
 
 ```
 What task would you like to add?
 Describe it in one line (e.g. "Add rate limiting to the API"):
 ```
 
-Wait for the answer before continuing.
+In both cases, wait for the developer's answer before continuing.
+Use their response as the confirmed task title going into Step 5.
 
 ---
 
-## Step 4 — Research the codebase
+## Step 5 — Research the codebase
 
-Using the task title as a guide, launch **up to 2 Explore agents in
-parallel**:
+Using the confirmed task title as a guide, launch **up to 2 Explore
+agents in parallel**:
 
 **Agent A — affected files**
 > Search the codebase for files most likely touched when implementing:
@@ -75,9 +96,10 @@ Collect both agents' results before proceeding.
 
 ---
 
-## Step 5 — Derive task attributes
+## Step 6 — Derive task attributes
 
-From the task title, project context, and research results, determine:
+From the confirmed task title, project context, plan files, and
+research results, determine:
 
 - **Tag** — pick the most appropriate: `[core]`, `[cli]`, `[config]`,
   `[test]`, `[docs]`, `[packaging]`
@@ -93,7 +115,7 @@ From the task title, project context, and research results, determine:
 
 ---
 
-## Step 6 — Append to TASKS.md
+## Step 7 — Append to TASKS.md
 
 Append the following block to the end of the `## Implementation`
 section in TASKS.md (before any trailing newline or section):
@@ -115,7 +137,7 @@ Rules:
 
 ---
 
-## Step 7 — Present and stop
+## Step 8 — Present and stop
 
 Show the appended task entry to the user and output:
 
