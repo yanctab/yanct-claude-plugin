@@ -1,5 +1,5 @@
 ---
-description: Research and plan a single task from TASKS.md without implementing it. Use after /tasks when you want a planning review before /execute.
+description: Research a task idea and append it as a detailed task entry to TASKS.md so /execute can pick it up. Use after /tasks when you want to add a planned task before running /execute.
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Agent
 ---

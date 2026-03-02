@@ -1,15 +1,15 @@
 ---
 name: plan-task
-description: Research and plan a single task from TASKS.md without implementing it. Produces a plan file at .claude/plans/<task-slug>.md and stops.
+description: Research a task idea, derive acceptance criteria and implementation approach, then append it as a detailed task entry to TASKS.md so /execute can pick it up.
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Agent
 ---
 
 # Task Planning
 
-You are researching the codebase and producing a written plan for one task
-from TASKS.md. You will **not** write any implementation code. You stop
-after presenting the plan.
+You are researching a task idea and producing a well-specified task entry
+that gets appended to `TASKS.md`. You will **not** write any implementation
+code. The task entry is the output — `/execute` will implement it later.
 
 ---
 
@@ -31,43 +31,36 @@ Read `TASKS.md` from the project root.
 If `TASKS.md` does not exist, tell the user to run `/tasks` first
 to generate the task list, and stop.
 
-Identify:
-- **Pending tasks** — lines matching `- [ ] **…**`
-- **Completed tasks** — lines matching `- [x] **…**`
+Note which tasks are already present so the new task can declare the
+right `Depends on:` value.
 
 ---
 
-## Step 3 — Select the target task
+## Step 3 — Identify the task to plan
 
-**If the user provided a task name as an argument** (e.g.
-`/plan-task "Implement auth module"`), match it against pending task
-titles (case-insensitive, partial match is fine). Use the first match.
-If no match is found, show the pending task list and ask the user to
-pick one.
+**If the user provided a task description as an argument** (e.g.
+`/plan-task "Add rate limiting to the API"`), use that description as
+the task title. Proceed to Step 4.
 
-**If no argument was provided**, display the pending task list in this
-format and ask the user which task to plan:
+**If no argument was provided**, ask the user:
 
 ```
-Pending tasks:
-  1. <title> [<tag>] <complexity>
-  2. <title> [<tag>] <complexity>
-  ...
-
-Which task would you like to plan? (enter number or title)
+What task would you like to plan?
+Describe it in one line (e.g. "Add rate limiting to the API"):
 ```
 
-Wait for the user's answer before continuing.
+Wait for the answer before continuing.
 
 ---
 
 ## Step 4 — Research the codebase
 
-Using the selected task title, acceptance criteria, and tags as a guide,
-launch **up to 2 Explore agents in parallel** to research the codebase:
+Using the task title as a guide, launch **up to 2 Explore agents in
+parallel**:
 
 **Agent A — affected files**
-> Search the codebase for files most likely touched by: "<task title>".
+> Search the codebase for files most likely touched when implementing:
+> "<task title>".
 > Look for existing modules, source files, and tests related to the
 > task's scope. Report file paths and a one-line description of each.
 > Do not suggest changes — only report what exists.
@@ -82,64 +75,54 @@ Collect both agents' results before proceeding.
 
 ---
 
-## Step 5 — Write the plan file
+## Step 5 — Derive task attributes
 
-Derive the task slug:
-- Take the task title
-- Lowercase it
-- Replace spaces with hyphens
-- Remove all characters that are not alphanumeric or hyphens
+From the task title, project context, and research results, determine:
 
-Ensure `.claude/plans/` exists (create it if needed).
-
-Write the plan to `.claude/plans/<task-slug>.md`:
-
-```markdown
-# Plan: <task title>
-
-## Task
-
-> Copied verbatim from TASKS.md (title, tag, complexity, acceptance
-> criteria, dependencies)
-
-## Approach
-
-### Files to modify
-- `<path>` — <what changes and why>
-
-### Files to create
-- `<path>` — <purpose>
-
-### Existing code to reuse
-- `<path>:<symbol>` — <how it will be used>
-
-## Test plan
-
-- [ ] <test case that satisfies acceptance criterion 1>
-- [ ] <test case that satisfies acceptance criterion 2>
-- …
-
-## Known unknowns / risks
-
-- <anything unclear from the codebase research>
-- <edge cases that need clarification>
-- (write "None" if there are none)
-```
-
-Fill every section from the codebase research. Do not leave placeholders.
+- **Tag** — pick the most appropriate: `[core]`, `[cli]`, `[config]`,
+  `[test]`, `[docs]`, `[packaging]`
+- **Complexity** — `S` (< 1 day), `M` (1–3 days), `L` (> 3 days)
+- **Acceptance criteria** — one or two specific, verifiable statements
+  describing the done state, including tests
+- **Depends on** — the last completed or last pending task in TASKS.md
+  that this task logically follows; use the exact title from TASKS.md
+- **Files to modify** — list from Agent A's results
+- **Files to create** — list from Agent A's results
+- **Reuse** — list from Agent B's results (`path:symbol`)
+- **Risks** — anything unclear or edge cases to watch
 
 ---
 
-## Step 6 — Present and stop
+## Step 6 — Append to TASKS.md
 
-Display the full contents of the plan file inline.
+Append the following block to the end of the `## Implementation`
+section in TASKS.md (before any trailing newline or section):
 
-Then output exactly:
+```markdown
+- [ ] **<task title>** [<tag>] <complexity>
+  - Acceptance: <acceptance criteria including tests>
+  - Depends on: <dependency>
+  - Modify: <file1>, <file2>
+  - Create: <file3> (or "none")
+  - Reuse: <path:symbol> (or "none")
+  - Risks: <risks> (or "none")
+```
+
+Rules:
+- Do not alter any existing lines in TASKS.md
+- Append only — never rewrite the file
+- Keep each sub-bullet on one line; do not wrap
+
+---
+
+## Step 7 — Present and stop
+
+Show the appended task entry to the user and output:
 
 ```
-Plan written to .claude/plans/<task-slug>.md
+Task appended to TASKS.md.
 
-No code has been written. Run /execute or confirm to start implementation.
+No code has been written. Run /execute to start implementation.
 ```
 
 Stop here. Do not proceed to implementation.
