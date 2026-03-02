@@ -13,8 +13,10 @@ selected updates on a branch with a PR.
 
 ## Step 1 — Read project context
 
-Read `.claude/CLAUDE.md` if it exists, or `CLAUDE.md` in the root.
-If neither exists, tell the developer to run `/init-project` first and stop.
+Read `.claude/CLAUDE.md` if it exists, or fall back to `CLAUDE.md` in the
+project root. If `.claude/CLAUDE.md` is missing but `CLAUDE.md` exists, that
+is a fixable state — do not stop, proceed to the audit. Only stop if both
+are absent, as the project has not been initialised at all.
 
 Detect project type:
 - `Cargo.toml` present → rust-cli
@@ -25,6 +27,15 @@ Detect project type:
 Check each item below. Mark each as ✓ (up to date) or ✗ (missing/outdated).
 
 ### Universal checks
+
+**`.claude/CLAUDE.md` — file exists**
+Check that `.claude/CLAUDE.md` exists. If missing, mark ✗ — the fix will
+recreate it from the plugin template. Skip the content check below if absent.
+
+**`.claude/settings.json` — file exists**
+Check that `.claude/settings.json` exists. If missing, mark ✗ — the fix will
+create it with the correct permissions and hook configuration. Skip the
+permissions checks below if absent.
 
 **`.claude/CLAUDE.md` — version control rules**
 Check that it contains both:
@@ -57,6 +68,11 @@ Check that `permissions.allow` also contains:
 **`.claude/settings.json` — post-edit lint hook**
 Check that `hooks.PostToolUse` exists with the post-edit-lint.sh command.
 
+**`.claude/settings.json` — hook path valid**
+If `PostToolUse` is configured, extract the `command` value and verify the
+file exists at that path. If the plugin has been updated and the version
+path has changed, the old path will be broken. Mark ✗ if the file is missing.
+
 **`Makefile` — lint delegates to fmt-check**
 Check that the `lint:` target calls `$(MAKE) fmt-check` (not `cargo fmt --check` directly).
 
@@ -69,8 +85,9 @@ Display a clear table of results:
 
 ```
 Audit results:
+  ✓ .claude/CLAUDE.md — file exists
   ✓ .claude/CLAUDE.md — version control rules present
-  ✗ .claude/settings.json — missing fmt-check and git permissions
+  ✗ .claude/settings.json — file missing
   ✗ Makefile — fmt and fmt-check targets missing
   ✓ GitHub — squash-only merge enabled
   ✗ GitHub — branch protection not configured
@@ -90,7 +107,45 @@ If the developer selects any file-level changes, create a branch:
 git checkout -b chore/update-project-workflow
 ```
 
+**IMPORTANT — scope guard**: Only modify files that are explicitly addressed
+in a fix step below. Do not delete, move, rename, or modify any other file
+in the repository.
+
 Apply each selected file-level change:
+
+### Fix: .claude/CLAUDE.md missing
+If `.claude/CLAUDE.md` does not exist, create the `.claude/` directory if
+needed, then create the file. Substitute `${CLAUDE_PLUGIN_ROOT}` with the
+actual value of that environment variable (the installed plugin path):
+```markdown
+# Claude Code Context
+
+@../CLAUDE.md
+
+@${CLAUDE_PLUGIN_ROOT}/CLAUDE.md
+
+## Version Control Rules
+
+- Never push directly to main or master — always use a feature branch and PR
+- All PRs must be merged with a squash commit — never merge commit or rebase merge
+```
+
+### Fix: .claude/settings.json missing
+If `.claude/settings.json` does not exist, create it. For rust-cli projects,
+use the full template from rust-cli-finalize (universal + rust permissions +
+PostToolUse hook). For generic projects, use the universal permissions
+template from init-project plus the PostToolUse hook section.
+In both cases set the hook command to the current plugin path:
+```
+${CLAUDE_PLUGIN_ROOT}/hooks/post-edit-lint.sh
+```
+substituting the actual value of `$CLAUDE_PLUGIN_ROOT` before writing.
+
+### Fix: .claude/settings.json hook path stale
+If the hook is configured but the command path does not resolve to an existing
+file, read the current settings.json, replace only the `command` value in the
+PostToolUse hook with `${CLAUDE_PLUGIN_ROOT}/hooks/post-edit-lint.sh`
+(substituting the actual `$CLAUDE_PLUGIN_ROOT`), then write the file back.
 
 ### Fix: .claude/CLAUDE.md version control rules
 Append to `.claude/CLAUDE.md` (after the existing imports):
@@ -102,12 +157,13 @@ Append to `.claude/CLAUDE.md` (after the existing imports):
 ```
 
 ### Fix: .claude/settings.json — universal permissions
-If the file does not exist, create it. If it exists, merge in the missing keys.
-Ensure `permissions.allow` contains all universal entries.
+The file exists (created above if it was missing). Merge in any missing
+`permissions.allow` entries so it contains at minimum all universal entries.
 
 ### Fix: .claude/settings.json — rust-specific permissions and hook
-Merge in the rust-specific permissions and the PostToolUse hook.
-The final file should match the template from rust-cli-finalize.
+The file exists (created above if it was missing). Merge in any missing
+rust-specific permissions and the PostToolUse hook section. The final file
+should match the template from rust-cli-finalize.
 
 ### Fix: Makefile — add fmt and fmt-check targets
 Add after the `build:` target:
@@ -122,11 +178,14 @@ For rust-cli: `cargo fmt` and `cargo fmt --check`.
 Update `lint:` to call `$(MAKE) fmt-check` instead of running the
 formatter check directly.
 
-After all file changes, commit:
+After all file changes, stage only the files you actually modified in this
+step — never use `git add .` or `git add -A`. Build the command from the
+list of files changed above, for example:
 ```
-git add .
+git add .claude/CLAUDE.md .claude/settings.json Makefile
 git commit -m "chore: align project with current plugin workflow"
 ```
+Omit any file from the `git add` that was not modified.
 
 Push and open a PR:
 ```
