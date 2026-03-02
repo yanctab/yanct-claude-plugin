@@ -31,7 +31,22 @@ git commit -m "chore: initial project structure"
 
 If a git repo already exists with commits, skip this step.
 
-## Step 3 — Set up GitHub remote
+## Step 3 — Ask about crates.io publishing
+
+Ask the developer:
+
+```
+Do you plan to publish this crate to crates.io?
+  1. Yes — the release pipeline will publish automatically when a version
+     tag is pushed. You will need a CRATES_IO_TOKEN secret in GitHub Actions.
+  2. No — skip crates.io setup (can be added later via /update-project)
+```
+
+Note the answer. The CI phase will explain how to create and add the
+token if the developer chooses yes. If they choose no, the publish step
+will be included in the workflow but will skip silently until a token is added.
+
+## Step 4 — Set up GitHub remote
 
 Run `git remote -v` to check if a remote is already configured.
 
@@ -67,7 +82,7 @@ git push -u origin main
 
 Mark this step complete once the remote is configured and main is pushed.
 
-## Step 4 — Makefile phase
+## Step 5 — Makefile phase
 
 ```
 git checkout -b chore/scaffold/makefile
@@ -91,7 +106,7 @@ Wait for confirmation, then:
 git checkout main && git pull
 ```
 
-## Step 5 — Cargo phase
+## Step 6 — Cargo phase
 
 ```
 git checkout -b chore/scaffold/cargo
@@ -115,7 +130,7 @@ Wait for confirmation, then:
 git checkout main && git pull
 ```
 
-## Step 6 — CI phase
+## Step 7 — CI phase
 
 ```
 git checkout -b chore/scaffold/ci
@@ -139,7 +154,7 @@ Wait for confirmation, then:
 git checkout main && git pull
 ```
 
-## Step 7 — Packaging phase
+## Step 8 — Packaging phase
 
 ```
 git checkout -b chore/scaffold/packaging
@@ -163,7 +178,7 @@ Wait for confirmation, then:
 git checkout main && git pull
 ```
 
-## Step 8 — Finalize phase
+## Step 9 — Finalize phase
 
 ```
 git checkout -b chore/scaffold/finalize
@@ -187,7 +202,7 @@ Wait for confirmation, then:
 git checkout main && git pull
 ```
 
-## Step 9 — Report
+## Step 10 — Report
 
 When all phases are merged, summarise:
 - The 5 PRs that were merged and what each contained

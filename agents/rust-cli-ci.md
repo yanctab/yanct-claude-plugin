@@ -60,6 +60,15 @@ jobs:
             target/x86_64-unknown-linux-musl/release/${{ env.BINARY }}
             dist/*.deb
             dist/PKGBUILD
+      - name: Publish to crates.io
+        run: |
+          if [ -n "$CRATES_IO_TOKEN" ]; then
+            cargo publish --token "$CRATES_IO_TOKEN"
+          else
+            echo "CRATES_IO_TOKEN not set — skipping crates.io publish"
+          fi
+        env:
+          CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
 ```
 
 ## Step 3 — Commit
@@ -89,20 +98,25 @@ Two workflows have been created:
 `release.yml` — runs when a `v*` tag is pushed
 - Builds a musl static binary, creates .deb and PKGBUILD, publishes a
   GitHub Release with all artifacts
+- Publishes to crates.io if `CRATES_IO_TOKEN` secret is set (skips
+  gracefully if not set)
 - Required: `GITHUB_TOKEN` with write permissions — this is automatically
   provided by GitHub Actions, but the workflow explicitly requests
   `permissions: contents: write`. Confirm that your repository does not
   have a restrictive organisation-level token policy that would block this.
-- No additional secrets required for the basic scaffold
+- Optional: `CRATES_IO_TOKEN` — a crates.io API token added as a GitHub
+  Actions secret. Without it the publish step is skipped silently.
 
 **What to check now**
 1. Is GitHub Actions enabled on your repository? (Settings → Actions → Allow all actions)
 2. Does your organisation restrict `GITHUB_TOKEN` permissions? If so, you
    may need to set `Allow GitHub Actions to create and approve pull requests`
    and grant write access to contents at the repo or org level.
-3. Do you plan to add any additional publishing steps (crates.io, package
-   registry, notifications)? If so, those secrets will need to be added to
-   the repository before the release pipeline can use them.
+3. Do you want to publish to crates.io on each release?
+   - If yes: go to https://crates.io/settings/tokens, create an API token
+     with the `publish-new` and `publish-update` scopes, then add it as a
+     repository secret named `CRATES_IO_TOKEN` (Settings → Secrets → Actions).
+   - If no: leave `CRATES_IO_TOKEN` unset — the publish step will be skipped.
 
 **Both pipelines will be tested end-to-end during the Foundation phase of
 `/execute`** — a test PR will verify `ci.yml` and a test tag will verify
