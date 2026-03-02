@@ -16,20 +16,21 @@ already exist.
 Read `.claude/CLAUDE.md`. If it does not exist, tell the user to run
 `/init-project` first and stop.
 
-## Step 2 — Initialise git repository
+## Step 2 — Initialise git repository and commit scaffold files
 
 If `.git` does not exist, run:
 ```
 git init
 ```
 
-Create the initial commit on main with the files init-project already created:
+Commit the files that /init-project created. This must always happen —
+regardless of whether git was just initialised or already existed with commits.
+Stage only the known init-project output files — never use `git add .` or
+`git add -A`:
 ```
-git add .
+git add .claude/CLAUDE.md .claude/settings.json Makefile
 git commit -m "chore: initial project structure"
 ```
-
-If a git repo already exists with commits, skip this step.
 
 ## Step 3 — Ask about crates.io publishing
 

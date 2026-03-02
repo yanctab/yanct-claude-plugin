@@ -90,6 +90,10 @@ If the developer selects any file-level changes, create a branch:
 git checkout -b chore/update-project-workflow
 ```
 
+**IMPORTANT — scope guard**: Only modify the specific files listed in the
+fixes below (`.claude/CLAUDE.md`, `.claude/settings.json`, `Makefile`).
+Do not delete, move, rename, or modify any other file in the repository.
+
 Apply each selected file-level change:
 
 ### Fix: .claude/CLAUDE.md version control rules
@@ -122,11 +126,14 @@ For rust-cli: `cargo fmt` and `cargo fmt --check`.
 Update `lint:` to call `$(MAKE) fmt-check` instead of running the
 formatter check directly.
 
-After all file changes, commit:
+After all file changes, stage only the files you actually modified in this
+step — never use `git add .` or `git add -A`. Build the command from the
+list of files changed above, for example:
 ```
-git add .
+git add .claude/CLAUDE.md .claude/settings.json Makefile
 git commit -m "chore: align project with current plugin workflow"
 ```
+Omit any file from the `git add` that was not modified.
 
 Push and open a PR:
 ```
