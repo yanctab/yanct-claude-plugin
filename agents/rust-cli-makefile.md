@@ -18,11 +18,12 @@ Overwrite the existing Makefile with the Rust implementation:
 ```makefile
 # Makefile
 
-.PHONY: build fmt fmt-check lint test clean release package publish docs help
+.PHONY: build fmt fmt-check lint test clean install release package publish docs help
 
-BINARY := $(shell grep '^name' Cargo.toml | head -1 | sed 's/.*= "//' | sed 's/"//')
+BINARY  := $(shell grep '^name'    Cargo.toml | head -1 | sed 's/.*= "//' | sed 's/"//')
 VERSION := $(shell grep '^version' Cargo.toml | head -1 | sed 's/.*= "//' | sed 's/"//')
-TARGET := x86_64-unknown-linux-musl
+TARGET  := x86_64-unknown-linux-musl
+PREFIX  ?= /usr/local
 
 ## help - show available targets
 help:
@@ -53,6 +54,10 @@ test:
 clean:
 	cargo clean
 
+## install - install the binary to $(PREFIX)/bin (default: /usr/local/bin)
+install: build
+	install -Dm755 target/$(TARGET)/release/$(BINARY) $(PREFIX)/bin/$(BINARY)
+
 ## release - tag the current version and push to trigger the release pipeline
 release:
 	git tag v$(VERSION)
@@ -77,6 +82,11 @@ build-deb:
 
 build-aur:
 	@scripts/build-aur.sh $(BINARY) $(VERSION)
+
+# ── Project-specific targets ──────────────────────────────────────────────────
+# Add targets below that are unique to this project. They will appear in
+# `make help` automatically if you use the `## target - description` convention.
+# Examples: database migrations, code generation, deployment steps, dev server.
 ```
 
 ## Step 3 — Commit
