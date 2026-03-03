@@ -76,6 +76,10 @@ path has changed, the old path will be broken. Mark ✗ if the file is missing.
 **`Makefile` — lint delegates to fmt-check**
 Check that the `lint:` target calls `$(MAKE) fmt-check` (not `cargo fmt --check` directly).
 
+**`.claude/settings.json` — post-commit task-done hook**
+Check that `hooks.PostToolUse` contains an entry with matcher `Bash` and
+the `post-commit-task-done.sh` command.
+
 **`.github/workflows/ci.yml`**
 Check that the file exists and runs `make lint` and `make test`.
 
@@ -164,6 +168,11 @@ The file exists (created above if it was missing). Merge in any missing
 The file exists (created above if it was missing). Merge in any missing
 rust-specific permissions and the PostToolUse hook section. The final file
 should match the template from rust-cli-finalize.
+
+### Fix: .claude/settings.json — post-commit task-done hook missing
+Add a PostToolUse entry with matcher `Bash` pointing to
+`${CLAUDE_PLUGIN_ROOT}/hooks/post-commit-task-done.sh`,
+substituting the actual `$CLAUDE_PLUGIN_ROOT` value before writing.
 
 ### Fix: Makefile — add fmt and fmt-check targets
 Add after the `build:` target:

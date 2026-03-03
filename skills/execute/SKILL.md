@@ -16,12 +16,14 @@ anything else. If TASKS.md does not exist, tell the user to run
 - Work through tasks **in the order defined in TASKS.md** — never reorder
 - Complete **one task at a time** — never start the next until the current
   passes its acceptance criteria
-- After completing each task, mark it done in TASKS.md: `- [x]`
 - After each task, briefly report: what was done, what changed,
   acceptance criteria met
 - If you hit a blocker, stop and ask — never guess and proceed
-- Never modify task titles or acceptance criteria — only tick checkboxes
+- Never modify task titles or acceptance criteria
 - Always use `make` targets — never call build tools directly
+
+The post-commit hook marks tasks done in TASKS.md automatically after
+each commit — do not edit TASKS.md directly.
 
 ---
 
@@ -60,7 +62,7 @@ git push -u origin main
 ```
 
 If option 2: ask for:
-- Repository name (suggest the project name from CLAUDE.md)
+- Repository name (suggest the project name — run `grep -m1 "^# " .claude/CLAUDE.md` to get it)
 - Visibility: public or private
 - Organisation or personal account
 
@@ -149,10 +151,10 @@ Stop and wait for the user to confirm before proceeding to implementation.
 
 Work through implementation tasks one at a time. For each task:
 
-### 1. Create a task branch
+### 1. Create a task branch and record the current task
 
-Before writing any code, create a branch for the task. Derive the name
-from the task title:
+Before writing any code, create a branch and record the task title so the
+post-commit hook can mark it done automatically:
 - Type: use the task tag if present (`[feat]` → `feat`, `[fix]` → `fix`,
   `[refactor]` → `refactor`); default to `feat` for implementation tasks
 - Slug: task title in lowercase with spaces replaced by hyphens,
@@ -160,6 +162,7 @@ from the task title:
 
 ```
 git checkout -b <type>/<slug>
+echo "<exact task title>" > .claude/current-task
 ```
 
 Never implement on main or on a previous task's branch.
@@ -187,10 +190,11 @@ Show the PR URL to the developer and tell them:
 
 Wait for the developer to confirm the PR is merged before continuing.
 
-### 7. Mark complete and continue
+### 7. Continue to next task
 
-Once the developer confirms the PR is merged, tick the task in TASKS.md
-and move to the next task — starting again from Step 1 with a new branch.
+Once the developer confirms the PR is merged, move to the next unchecked
+task in TASKS.md — starting again from Step 1 with a new branch.
+The post-commit hook already marked the task done when the commit was made.
 
 ### Checkpoints
 

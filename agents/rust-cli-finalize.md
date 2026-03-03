@@ -140,11 +140,23 @@ that adds rust-specific permissions and the post-edit lint hook:
             "command": "~/.claude/plugins/cache/yanct-claude-plugin/yanct-claude-plugin/0.1.0/hooks/post-edit-lint.sh"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/plugins/cache/yanct-claude-plugin/yanct-claude-plugin/0.1.0/hooks/post-commit-task-done.sh"
+          }
+        ]
       }
     ]
   }
 }
 ```
+
+Substitute the actual value of `$CLAUDE_PLUGIN_ROOT` in both hook command paths
+before writing — the literal `$CLAUDE_PLUGIN_ROOT` must not appear in the output file.
 
 ## Step 5 — Install local toolchain
 
