@@ -24,8 +24,10 @@ Check if a CLAUDE.md exists in the project root (not in .claude/):
 Ask the user which type of project this is. Present the available types:
 
 1. rust-cli — Rust binary, musl static build, .deb + AUR packaging
-2. web — static or server-side web project (if /init-web skill is installed)
-3. other — ask for details; Claude will set up a generic Makefile and note
+2. claude-plugin — Claude Code plugin with commands, skills, and agents;
+   wires in skill-creator as a dev dependency
+3. web — static or server-side web project (if /init-web skill is installed)
+4. other — ask for details; Claude will set up a generic Makefile and note
    that no type-specific skill exists yet
 
 Each project type has a dedicated init skill that implements the Makefile
@@ -171,6 +173,7 @@ docs:
 Based on the user's answer in Step 2, immediately invoke the
 appropriate skill:
 - rust-cli → invoke /init-rust-cli
+- claude-plugin → invoke /init-claude-plugin
 - web → invoke /init-web (if not installed, tell the user and stop)
 - other → tell the user no type-specific skill exists yet; they should
   implement the Makefile targets manually and run /tasks when ready
