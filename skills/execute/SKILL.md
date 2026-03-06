@@ -181,7 +181,7 @@ commit — returning only a summary.
 If the task-runner reports test failures it could not resolve, stop
 and ask the developer before continuing.
 
-### 6. Open PR
+### 3. Open PR
 
 > Use the pr-creator agent with title "<task title>" and body "Implements task: <task title>"
 
@@ -190,7 +190,7 @@ Show the PR URL to the developer and tell them:
 
 Wait for the developer to confirm the PR is merged before continuing.
 
-### 7. Continue to next task
+### 4. Continue to next task
 
 Once the developer confirms the PR is merged, move to the next unchecked
 task in TASKS.md — starting again from Step 1 with a new branch.
