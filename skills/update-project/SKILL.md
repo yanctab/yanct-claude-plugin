@@ -2,7 +2,7 @@
 name: update-project
 description: Audit an existing project against the current plugin workflow and apply any missing pieces. Run when a project was initialised before a plugin update or when workflow rules have changed.
 disable-model-invocation: true
-allowed-tools: Read, Write, Bash(git *), Bash(gh *), Bash(mkdir *)
+allowed-tools: Read, Write, Bash(git *), Bash(gh *), Bash(mkdir *), Bash(touch *), Bash(jq *), Bash(rsync *)
 ---
 
 # Update Project
@@ -20,6 +20,7 @@ are absent, as the project has not been initialised at all.
 
 Detect project type:
 - `Cargo.toml` present → rust-cli
+- `.claude-plugin/plugin.json` present → claude-plugin
 - Otherwise → generic
 
 ## Step 2 — Audit current state
@@ -82,6 +83,51 @@ the `post-commit-task-done.sh` command.
 
 **`.github/workflows/ci.yml`**
 Check that the file exists and runs `make lint` and `make test`.
+
+### Claude-plugin checks (only if .claude-plugin/plugin.json exists)
+
+**`.claude-plugin/plugin.json` — valid JSON**
+Run: `jq . .claude-plugin/plugin.json > /dev/null 2>&1`
+Mark ✗ if the command fails.
+
+**`.claude-plugin/marketplace.json` — exists and valid JSON**
+Check the file exists, then run: `jq . .claude-plugin/marketplace.json > /dev/null 2>&1`
+Mark ✗ if missing or invalid.
+
+**`.claude-plugin/marketplace.json` — source format**
+Check that `plugins[0].source.source` equals `"url"` (not `"."`).
+A value of `"."` is invalid and will break `/plugin marketplace add`.
+
+**Plugin directories — commands/ skills/ agents/ hooks/**
+Check that all four directories exist.
+
+**`.claude/settings.json` — claude-plugin permissions**
+Check that `permissions.allow` contains:
+`"Bash(jq *)"` and `"Bash(rsync *)"`.
+
+**`.claude/settings.json` — post-edit lint hook**
+Check that `hooks.PostToolUse` exists with the post-edit-lint.sh command.
+
+**`.claude/settings.json` — hook path valid**
+If `PostToolUse` is configured, extract the `command` value and verify the
+file exists at that path. Mark ✗ if the file is missing (stale plugin path).
+
+**`.claude/settings.json` — post-commit task-done hook**
+Check that `hooks.PostToolUse` contains an entry with matcher `Bash` and
+the `post-commit-task-done.sh` command.
+
+**`Makefile` — make install uses rsync to local plugin cache**
+Check that the `install:` target contains `rsync` and references
+`$(HOME)/.claude/plugins/cache`.
+
+**`Makefile` — make lint validates JSON with jq**
+Check that the `lint:` target calls `jq`.
+
+**`.claude/CLAUDE.md` — skill-creator dependency declared**
+Check that `.claude/CLAUDE.md` mentions `skill-creator`.
+
+**`.github/workflows/ci.yml` — installs jq**
+Check that ci.yml installs jq (e.g. `apt-get install -y jq`).
 
 ## Step 3 — Present audit report
 
@@ -186,6 +232,79 @@ fmt-check:
 For rust-cli: `cargo fmt` and `cargo fmt --check`.
 Update `lint:` to call `$(MAKE) fmt-check` instead of running the
 formatter check directly.
+
+### Fix: .claude-plugin/marketplace.json — source format
+Read the file, change `plugins[0].source` from `{ "source": "." }` to:
+```json
+{
+  "source": "url",
+  "url": "https://github.com/<owner>/<repo>.git"
+}
+```
+Ask the developer for the GitHub URL if it is not already present in
+`plugin.json` or `marketplace.json`.
+
+### Fix: plugin directories missing
+Create any missing directories:
+```
+mkdir -p commands skills agents hooks
+touch commands/.gitkeep skills/.gitkeep agents/.gitkeep hooks/.gitkeep
+```
+Only create `.gitkeep` for directories that were just created and are empty.
+
+### Fix: .claude/settings.json — claude-plugin permissions and hooks
+The file exists (created above if missing). Merge in any missing entries so
+`permissions.allow` contains all universal entries plus `"Bash(jq *)"` and
+`"Bash(rsync *)"`. Add the PostToolUse hook section if missing, with both
+post-edit-lint.sh and post-commit-task-done.sh. Substitute the actual value
+of `$CLAUDE_PLUGIN_ROOT` in hook paths before writing.
+
+### Fix: Makefile — make install target
+Replace or add the `install:` target with the rsync-based local install:
+```makefile
+CACHE_DIR   := $(HOME)/.claude/plugins/cache/$(PLUGIN_NAME)/$(PLUGIN_NAME)/$(VERSION)
+
+## install - copy working directory into the local Claude plugin cache
+install:
+	@echo "Installing $(PLUGIN_NAME)@$(VERSION) to local Claude plugin cache..."
+	@mkdir -p "$(CACHE_DIR)"
+	@rsync -a --delete --exclude='.git/' --exclude='.claude/' . "$(CACHE_DIR)/"
+	@echo "Installed to: $(CACHE_DIR)"
+	@echo "Reload Claude Code to pick up changes."
+```
+Also ensure the Makefile defines `PLUGIN_NAME` and `VERSION` via `jq` from
+`.claude-plugin/plugin.json` if not already present.
+
+### Fix: Makefile — make lint validates JSON
+Replace or update the `lint:` target to validate both JSON manifests:
+```makefile
+lint:
+	@echo "Validating .claude-plugin/plugin.json..."
+	@jq . .claude-plugin/plugin.json > /dev/null
+	@echo "Validating .claude-plugin/marketplace.json..."
+	@jq . .claude-plugin/marketplace.json > /dev/null
+	@echo "JSON validation passed."
+```
+
+### Fix: .claude/CLAUDE.md — skill-creator dependency
+Append to `.claude/CLAUDE.md`:
+```markdown
+## Dev Dependencies
+
+The skill-creator plugin from Anthropic is required to create and iterate on
+skills in this project. Install it once in Claude Code:
+
+```
+/plugin marketplace add claude-plugins-official/skill-creator
+/plugin install skill-creator@skill-creator
+```
+
+Use `/skill-creator` to create new skills, improve existing ones, or run evals.
+```
+
+### Fix: .github/workflows/ci.yml — installs jq
+Read the file and add `sudo apt-get install -y jq rsync` as a step before
+`make lint` and `make test` if not already present.
 
 After all file changes, stage only the files you actually modified in this
 step — never use `git add .` or `git add -A`. Build the command from the
