@@ -2,7 +2,7 @@
 
 ## Implementation
 
-- [ ] **Automate plugin version increment and git tag on release** [core] M
+- [x] **Automate plugin version increment and git tag on release** [core] M
   - Acceptance: `make release` interactively prompts for major/minor/patch, writes the new semver into `.claude-plugin/plugin.json` via `jq`, commits the bump with message `chore(release): bump version to v<new>`, creates an annotated tag `v<new>`, and pushes both the commit and the tag; running `make release` with no uncommitted changes on a clean branch succeeds end-to-end with the correct version reflected in `plugin.json` and `git tag`
   - Depends on: none
   - Modify: `Makefile`
