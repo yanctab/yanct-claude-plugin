@@ -54,10 +54,35 @@ setup:
 	@echo "  /plugin marketplace add claude-plugins-official/skill-creator"
 	@echo "  /plugin install skill-creator@skill-creator"
 
-## release - tag the current version and push to trigger the release pipeline
+## release - interactive version bump, commit, tag, and push
 release:
-	git tag v$(VERSION)
-	git push origin v$(VERSION)
+	@set -e; \
+	PLUGIN_JSON=".claude-plugin/plugin.json"; \
+	CURRENT=$$(jq -r '.version' "$$PLUGIN_JSON"); \
+	MAJOR=$$(echo "$$CURRENT" | cut -d. -f1); \
+	MINOR=$$(echo "$$CURRENT" | cut -d. -f2); \
+	PATCH=$$(echo "$$CURRENT" | cut -d. -f3); \
+	printf "Current version: $$CURRENT\n"; \
+	printf "Bump (major/minor/patch)? [patch]: "; \
+	read BUMP; \
+	BUMP=$${BUMP:-patch}; \
+	case "$$BUMP" in \
+	  major) MAJOR=$$((MAJOR + 1)); MINOR=0; PATCH=0 ;; \
+	  minor) MINOR=$$((MINOR + 1)); PATCH=0 ;; \
+	  patch) PATCH=$$((PATCH + 1)) ;; \
+	  *) echo "Unknown bump type: $$BUMP (use major, minor, or patch)"; exit 1 ;; \
+	esac; \
+	NEW="$$MAJOR.$$MINOR.$$PATCH"; \
+	echo "Bumping $$CURRENT -> $$NEW"; \
+	jq --arg v "$$NEW" '.version = $$v' "$$PLUGIN_JSON" > "$$PLUGIN_JSON.tmp" && mv "$$PLUGIN_JSON.tmp" "$$PLUGIN_JSON"; \
+	$(MAKE) lint; \
+	$(MAKE) test; \
+	git add "$$PLUGIN_JSON"; \
+	git commit -m "chore(release): bump version to v$$NEW"; \
+	git tag -a "v$$NEW" -m "Release v$$NEW"; \
+	git push origin HEAD; \
+	git push origin "v$$NEW"; \
+	echo "Released v$$NEW"
 
 ## package - no packaging step for Claude plugins
 package:
