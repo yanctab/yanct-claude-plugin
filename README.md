@@ -112,6 +112,7 @@ targets and sets up the type-specific toolchain, CI, and packaging.
 | Type | Skill | Toolchain | Packaging |
 |---|---|---|---|
 | `rust-cli` | `/init-rust-cli` | cargo, clippy, rustfmt, musl static build | .deb + AUR PKGBUILD |
+| `claude-plugin` | `/init-claude-plugin` | jq (JSON validation), skill-creator plugin | GitHub Release |
 | `web` | `/init-web` | *(not yet implemented)* | — |
 
 Adding a new type means writing a single `skills/init-<type>/SKILL.md`
@@ -252,6 +253,7 @@ reminder of how to trigger a release with `make release`.
 | `/commit` | Stage changes and create a conventional commit with approval |
 | `/update-project` | Audit an existing project against the current plugin workflow and apply missing pieces |
 | `/init-rust-cli` | Type skill invoked by `/init-project` — can also be called directly |
+| `/init-claude-plugin` | Type skill for Claude Code plugins — manifests, structure, CI, skill-creator wired in |
 
 ---
 
