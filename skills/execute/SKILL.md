@@ -22,8 +22,7 @@ anything else. If TASKS.md does not exist, tell the user to run
 - Never modify task titles or acceptance criteria
 - Always use `make` targets — never call build tools directly
 
-The post-commit hook marks tasks done in TASKS.md automatically after
-each commit — do not edit TASKS.md directly.
+After each commit, update TASKS.md directly — do not rely on any hook.
 
 ---
 
@@ -149,52 +148,76 @@ Stop and wait for the user to confirm before proceeding to implementation.
 
 ## Phase 2 — Implementation (iterative loop)
 
-Work through implementation tasks one at a time. For each task:
+Work through implementation tasks one at a time. Complete every step
+below in order for each task — none are optional.
 
-### 1. Create a task branch and record the current task
+### How to find the next task
 
-Before writing any code, create a branch and record the task title so the
-post-commit hook can mark it done automatically:
-- Type: use the task tag if present (`[feat]` → `feat`, `[fix]` → `fix`,
-  `[refactor]` → `refactor`); default to `feat` for implementation tasks
-- Slug: task title in lowercase with spaces replaced by hyphens,
-  special characters removed (max 40 chars)
+Grep TASKS.md for the first line matching `- [ ]` in the Implementation
+section. That is the current task. If all tasks are checked off, go to
+Phase 3.
+
+### Step 1 — Create a task branch
+
+Before writing any code, ensure you are on a clean branch:
 
 ```
+git checkout main
+git pull
 git checkout -b <type>/<slug>
-echo "<exact task title>" > .claude/current-task
 ```
+
+- Type: use the task tag if present (`[feat]` → `feat`, `[fix]` → `fix`,
+  `[refactor]` → `refactor`); default to `feat`
+- Slug: task title in lowercase, spaces → hyphens, special chars removed,
+  max 40 chars
 
 Never implement on main or on a previous task's branch.
 
-### 2. Implement, test, and commit
+### Step 2 — Implement, test, and commit
 
-Delegate the full implement → lint → test → commit cycle to the
-task-runner agent, passing the task title:
+Delegate to the task-runner agent:
 
 > Use the task-runner agent to implement task: "<task title>"
 
-The task-runner keeps implementation details out of this context.
-It will read TASKS.md itself, implement the task, run tests, and
-commit — returning only a summary.
+If the task-runner reports failures it could not resolve, stop and ask
+the developer before continuing.
 
-If the task-runner reports test failures it could not resolve, stop
-and ask the developer before continuing.
+Capture the summary returned by the task-runner — you need it for Step 4.
 
-### 3. Open PR
+### Step 3 — Mark task complete in TASKS.md
 
-> Use the pr-creator agent with title "<task title>" and body "Implements task: <task title>"
+Immediately after the task-runner commits, update TASKS.md yourself:
+- Find the line: `- [ ] **<task title>**`
+- Change it to: `- [x] **<task title>**`
 
-Show the PR URL to the developer and tell them:
+Do this directly — do not rely on any hook.
+
+### Step 4 — Open PR
+
+Create a PR using the task-runner's summary as the body:
+
+> Use the pr-creator agent with title "<task title>" and body "<task-runner summary>"
+
+Show the PR URL to the developer and say:
 > Please review and merge the PR. Let me know when it is merged.
 
-Wait for the developer to confirm the PR is merged before continuing.
+**STOP. Do not read the next task or take any action until the developer
+explicitly confirms the PR is merged.**
 
-### 4. Continue to next task
+### Step 5 — After merge confirmed
 
-Once the developer confirms the PR is merged, move to the next unchecked
-task in TASKS.md — starting again from Step 1 with a new branch.
-The post-commit hook already marked the task done when the commit was made.
+```
+git checkout main
+git pull
+```
+
+Ask the developer:
+> Task "<task title>" is done. What would you like to work on next?
+> I can continue with the next task in TASKS.md, or you can tell me
+> to skip, reorder, or stop.
+
+Wait for their answer, then return to Step 1 with the confirmed next task.
 
 ### Checkpoints
 
