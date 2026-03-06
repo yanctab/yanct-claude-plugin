@@ -50,16 +50,34 @@ before a single line of implementation is written.
 
 **`/execute`** works through `TASKS.md` one task at a time. Foundation
 tasks are handled with specific logic for the human interaction points
-(GitHub repo creation, CI secrets). Implementation tasks follow an
-iterative loop: implement → lint (automatic via hook) → test (via
-subagent, failures only) → `/commit` (conventional commit with approval).
-Claude pauses at checkpoints and never proceeds past a gate until
-acceptance criteria are met.
+(GitHub repo creation, CI secrets). Implementation tasks follow a strict
+per-task loop: create branch → implement (via task-runner subagent) →
+mark task done in TASKS.md → open PR with the implementation summary as
+body → wait for merge confirmation → ask what to do next. Claude never
+auto-continues to the next task and never skips the PR step.
+
+**`/new-task`** adds a single new task to `TASKS.md` without touching
+any code. Claude clarifies intent, delegates codebase research to the
+task-researcher subagent, and appends a fully-specified task entry
+(acceptance criteria, dependencies, files to modify, risks).
+
+**`/edit-task`** selects an existing task by number, enters planning
+mode, presents the current entry, and rewrites it in place after
+confirming what to change. The task-editor subagent runs the same
+codebase research as task-researcher before updating the block.
 
 ### Context management
 
-Three subagents keep verbose output out of the main session:
+Subagents keep verbose output out of the main session:
 
+- **task-runner** — implements a task in a subagent (all file edits, shell
+  commands, lint/test cycles). The main session only sees the summary.
+- **task-researcher** — does deep codebase research for `/new-task` before
+  writing a task entry. Reads files and traces dependencies without
+  polluting the main context.
+- **task-editor** — same as task-researcher, but for `/edit-task`. Reads
+  relevant code before the task entry is rewritten.
+- **pr-creator** — opens the GitHub PR and returns only the PR URL.
 - **test-runner** — runs `make test`, returns only failing test names and
   error messages. If all tests pass you see two words: `All tests passed.`
 - **lint-checker** — same pattern for `make lint`
@@ -178,6 +196,28 @@ Claude reads your `CLAUDE.md` and produces `TASKS.md`. Review it — the
 Foundation section is fixed and cannot be reordered. Implementation tasks
 can be adjusted. When ready, confirm to continue.
 
+### 3a. Refine the task list (optional)
+
+Add tasks that were not captured automatically:
+
+```
+/new-task
+```
+
+Claude asks what you want to add, delegates codebase research to the
+task-researcher subagent, then appends a fully-specified task entry with
+acceptance criteria, dependencies, files to modify, and risks.
+
+Edit an existing task that needs more detail or a different scope:
+
+```
+/edit-task [number]
+```
+
+If you omit the number, Claude lists all tasks and asks which one to
+edit. The task-editor subagent reads relevant code before the entry is
+rewritten in place.
+
 ### 4. Execute
 
 ```
@@ -197,6 +237,21 @@ approval). Checkpoints after major groups.
 
 **Completion** — final lint + test pass, summary of what was built,
 reminder of how to trigger a release with `make release`.
+
+---
+
+## Commands reference
+
+| Command | Description |
+|---|---|
+| `/init-project` | Scaffold a new project — creates Makefile, CI, packaging stubs, initial commit |
+| `/tasks` | Generate `TASKS.md` from `CLAUDE.md` with Foundation + Implementation sections |
+| `/execute` | Work through `TASKS.md`: Foundation phase, then one implementation task at a time |
+| `/new-task` | Research a task idea and append a fully-specified entry to `TASKS.md` |
+| `/edit-task [N]` | Rewrite an existing task entry in place (number optional — lists tasks if omitted) |
+| `/commit` | Stage changes and create a conventional commit with approval |
+| `/update-project` | Audit an existing project against the current plugin workflow and apply missing pieces |
+| `/init-rust-cli` | Type skill invoked by `/init-project` — can also be called directly |
 
 ---
 
