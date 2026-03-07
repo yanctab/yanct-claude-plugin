@@ -18,7 +18,7 @@
   - Reuse: `agents/rust-cli-finalize.md:Step 2` (manpage stub pattern), `agents/rust-cli-finalize.md:Step 3` (README pattern), `skills/execute/SKILL.md:Phase 2 Step 2` (task-runner invocation pattern)
   - Risks: skills are markdown instructions, not code — the "enforcement" is prompt-level and relies on the agent following instructions; projects that have no `docs/` directory or no manpage stub require the step to be conditional on what actually exists; the doc-update scope must be kept narrow to avoid spurious edits on unrelated files
 
-- [ ] **Add /pr-creator slash command to invoke the pr-creator agent standalone** [cli] S
+- [x] **Add /pr-creator slash command to invoke the pr-creator agent standalone** [cli] S
   - Acceptance: a `commands/pr-creator.md` file exists with a valid front-matter and delegates to `agents/pr-creator.md`; running `/pr-creator` in a Claude Code session with a feature branch presents the user with a PR title prompt, pushes the branch, and opens a GitHub PR; the command is listed in `README.md` alongside other commands
   - Depends on: Enforce documentation, examples, README.md, and manpage updates as a post-step in skill execution
   - Modify: `README.md`
