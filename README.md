@@ -252,6 +252,7 @@ reminder of how to trigger a release with `make release`.
 | `/new-task` | Research a task idea and append a fully-specified entry to `TASKS.md` |
 | `/edit-task [N]` | Rewrite an existing task entry in place (number optional — lists tasks if omitted) |
 | `/commit` | Stage changes and create a conventional commit with approval |
+| `/pr-creator` | Push the current branch and open a GitHub pull request |
 | `/update-project` | Audit an existing project against the current plugin workflow and apply missing pieces |
 | `/init-rust-cli` | Type skill invoked by `/init-project` — can also be called directly |
 | `/init-claude-plugin` | Type skill for Claude Code plugins — manifests, structure, CI, skill-creator wired in |
