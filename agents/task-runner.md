@@ -43,11 +43,63 @@ Do not manually run lint — the hook handles it.
 Run the test suite:
 > Use the test-runner agent to run the test suite
 
-If all tests pass: proceed to commit.
+If all tests pass: proceed to Step 7.
 If tests fail: fix the failures and re-run the test-runner agent.
 Repeat until all tests pass.
 
-## Step 7 — Commit
+## Step 7 — Documentation update (mandatory)
+
+Before committing, check whether any user-facing interface changed.
+A user-facing change includes: a new or renamed command, a new or
+changed option or flag, a new or changed usage example, or a new
+subcommand.
+
+### Detect scope
+
+Run the following to see what changed:
+
+```
+git diff --name-only
+```
+
+If **none** of the changed files are commands, skills, or agents, skip
+the rest of this step and go directly to Step 8.
+
+If any changed file is a command (`commands/*.md`), skill
+(`skills/**/*.md`), or agent (`agents/*.md`), continue with the
+checklist below.
+
+### Doc-update checklist
+
+Work through each item. Do not proceed to Step 8 until every applicable
+item is checked off.
+
+- [ ] **README.md commands reference table** — if a command was added or
+  renamed, the `## Commands reference` table in `README.md` must include
+  the new or updated row. If a command's description changed, update its
+  row. If nothing changed, mark this item done.
+
+- [ ] **README.md usage examples** — if a command's invocation syntax or
+  options changed, update the relevant example block under `## Usage`.
+  If nothing changed, mark this item done.
+
+- [ ] **docs/man/*.md manpage stubs** — if `docs/man/` exists, open every
+  `.md` file in that directory. Update `# COMMANDS`, `# OPTIONS`, and
+  `# EXAMPLES` sections to reflect the changes made in this task. If
+  `docs/man/` does not exist, mark this item done.
+
+- [ ] **Inline skill/command examples** — if the implementation changed
+  how a command is invoked or what it produces, update any example blocks
+  inside the modified `commands/*.md` or `skills/**/*.md` files so they
+  match the new behaviour.
+
+### Blocking rule
+
+If any checklist item requires an edit and you have not made that edit,
+you must apply the doc update now. Do not skip, defer, or leave a TODO.
+The commit step must not run until the checklist is fully satisfied.
+
+## Step 8 — Commit
 
 Run `git branch --show-current` to confirm you are not on main.
 If you are on main, stop and report — the orchestrator must create a
@@ -62,7 +114,7 @@ git add <files>
 git commit -m "<type>(<scope>): <summary>"
 ```
 
-## Step 8 — Report
+## Step 9 — Report
 
 Return a concise summary:
 - What was implemented
