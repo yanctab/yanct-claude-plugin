@@ -233,8 +233,9 @@ and waits for your confirmation before proceeding.
 
 **Implementation phase** — one task at a time: implement → lint (hook
 fires automatically on every file edit) → test (subagent returns failures
-only) → `/commit` (shows proposed conventional commit message, waits for
-approval). Checkpoints after major groups.
+only) → doc update (task-runner checks README.md, manpage stubs, and
+inline examples and blocks the commit if any need updating) → commit.
+Checkpoints after major groups.
 
 **Completion** — final lint + test pass, summary of what was built,
 reminder of how to trigger a release with `make release`.

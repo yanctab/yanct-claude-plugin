@@ -180,6 +180,13 @@ Delegate to the task-runner agent:
 
 > Use the task-runner agent to implement task: "<task title>"
 
+The task-runner runs the following mandatory sequence: implement →
+lint → test → doc update → commit. The doc-update step checks whether
+any user-facing commands, options, or examples changed and updates
+`README.md`, any `docs/man/*.md` manpage stubs, and inline
+skill/command examples before the commit runs. It will not commit
+until that checklist is satisfied.
+
 If the task-runner reports failures it could not resolve, stop and ask
 the developer before continuing.
 
