@@ -56,6 +56,13 @@ mark task done in TASKS.md → open PR with the implementation summary as
 body → wait for merge confirmation → ask what to do next. Claude never
 auto-continues to the next task and never skips the PR step.
 
+**`/continue`** resumes an interrupted `/execute` session. It inspects
+`git status`, `git log`, and `gh pr list` to classify where the session
+stopped — uncommitted work, committed but no PR, open PR waiting for
+merge, or merged PR not yet pulled — and takes the correct recovery
+action for each state. On a clean post-merge state it advances to the
+next unchecked task automatically.
+
 **`/new-task`** adds a single new task to `TASKS.md` without touching
 any code. Claude clarifies intent, delegates codebase research to the
 task-researcher subagent, and appends a fully-specified task entry
@@ -252,6 +259,7 @@ reminder of how to trigger a release with `make release`.
 | `/new-task` | Research a task idea and append a fully-specified entry to `TASKS.md` |
 | `/edit-task [N]` | Rewrite an existing task entry in place (number optional — lists tasks if omitted) |
 | `/commit` | Stage changes and create a conventional commit with approval |
+| `/continue` | Resume an interrupted `/execute` session — detects git/PR state and recovers |
 | `/pr-creator` | Push the current branch and open a GitHub pull request |
 | `/update-project` | Audit an existing project against the current plugin workflow and apply missing pieces |
 | `/init-rust-cli` | Type skill invoked by `/init-project` — can also be called directly |
