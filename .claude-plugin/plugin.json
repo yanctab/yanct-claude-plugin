@@ -1,6 +1,6 @@
 {
   "name": "yanct-claude-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Repeatable, deterministic development workflow for new projects via a Makefile contract",
   "author": {
     "name": "yanctab"
