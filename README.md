@@ -31,8 +31,7 @@ your local development environment.
 ### The development loop
 
 ```
-Write CLAUDE.md → /init-project → /tasks → review TASKS.md → /execute
-                                           └ or /new-prd → /prd-to-issues → /execute <issue>
+Write CLAUDE.md → /init-project → /new-prd → /prd-to-issues → /execute <issue>
 ```
 
 Each phase has a clear purpose and produces a concrete artifact:
@@ -41,30 +40,7 @@ Each phase has a clear purpose and produces a concrete artifact:
 asks what type of project this is, creates the `.claude/` directory
 structure with a Makefile, then hands off to the appropriate type skill
 to implement the targets and set up the toolchain, CI pipeline, and
-packaging stubs.
-
-**`/tasks`** reads your `CLAUDE.md` architecture and breaks it into a
-`TASKS.md` with strict ordering. The first section is always Foundation:
-six mandatory tasks that verify every make target works, push the scaffold
-to GitHub, and confirm the CI and release pipelines are live end-to-end
-before a single line of implementation is written.
-
-**`/execute`** implements a single GitHub issue using test-driven
-development. It takes an issue number or URL as input, hands off to
-the issue-runner subagent, and prints the resulting PR URL. The agent
-rejects PRD issues (run `/prd-to-issues` on those first), creates a
-branch, then runs a red-green-[refactor] loop per acceptance criterion
-on the issue: write one failing test, write the minimum code to make
-it pass, commit, optionally refactor only the code just written.
-Every test and every line of code traces back to an acceptance
-criterion on the issue — no speculative features. One issue, one
-squash-merged PR.
-
-**`/continue`** resumes an interrupted `/execute` session. It inspects
-`git status`, `git log`, and `gh pr list` to classify where the session
-stopped — uncommitted work, committed but no PR, open PR waiting for
-merge, or merged PR not yet pulled — and takes the correct recovery
-action for each state.
+packaging stubs. This bootstrap is the only non-issue-driven step.
 
 **`/new-prd`** captures a feature idea as a Product Requirements
 Document and files it as a GitHub issue — no code changes. Claude
@@ -88,18 +64,21 @@ blocked-by, user stories covered, layers touched), iterates with you
 until you approve, then files each slice as its own issue in
 dependency order so *Blocked by* fields reference real issue numbers.
 
-**`/edit-task`** selects an existing task by number, enters planning
-mode, presents the current entry, and rewrites it in place after
-confirming what to change. The task-editor subagent runs the same
-codebase research as task-researcher before updating the block.
+**`/execute`** implements a single GitHub issue using test-driven
+development. It takes an issue number or URL as input, hands off to
+the issue-runner subagent, and prints the resulting PR URL. The agent
+rejects PRD issues (run `/prd-to-issues` on those first), creates a
+branch, then runs a red-green-[refactor] loop per acceptance criterion
+on the issue: write one failing test, write the minimum code to make
+it pass, commit, optionally refactor only the code just written.
+Every test and every line of code traces back to an acceptance
+criterion on the issue — no speculative features. One issue, one
+squash-merged PR.
 
 ### Context management
 
 Subagents keep verbose output out of the main session:
 
-- **task-runner** — implements a task from `TASKS.md` in a subagent (all
-  file edits, shell commands, lint/test cycles). The main session only
-  sees the summary.
 - **issue-runner** — implements a single GitHub issue in a subagent using
   test-driven red-green-[refactor] cycles, commits per cycle, and opens
   a squash-merge PR. The main session only sees the final report.
@@ -112,8 +91,6 @@ Subagents keep verbose output out of the main session:
   tracer-bullet slices, and files each approved slice as a GitHub
   issue. The main session only sees the slice breakdown and the
   filed issue URLs.
-- **task-editor** — does codebase research for `/edit-task`. Reads
-  relevant code before the task entry is rewritten.
 - **pr-creator** — opens the GitHub PR and returns only the PR URL.
 - **test-runner** — runs `make test`, returns only failing test names and
   error messages. If all tests pass you see two words: `All tests passed.`
@@ -132,12 +109,8 @@ is scaffolded as stubs during `/init-project`. The stubs are intentionally
 incomplete — the exact set of installed files, runtime dependencies, config
 paths, and optional extras is only known once the implementation is done.
 Each generated file carries a `TODO` comment block listing what needs to
-be filled in.
-
-The `/tasks` skill detects which packaging stubs exist and adds the
-appropriate finalisation tasks at the end of `TASKS.md`. These are
-worked through with the task-runner subagent in the same lint/test/commit
-loop as every other task.
+be filled in. Finalise the packaging as its own PRD → issue → `/execute`
+flow once the feature set stabilises.
 
 ---
 
@@ -192,7 +165,7 @@ Before running anything, write a `CLAUDE.md` in your project directory.
 This is the source of truth — describe what you are building, the module
 structure, subcommands or routes, constraints, and anything else Claude
 needs to understand the project. The more complete this is, the better
-`/tasks` will plan the implementation.
+`/new-prd` can synthesise feature specs.
 
 Example structure:
 
@@ -224,21 +197,11 @@ skill. For `rust-cli` this produces: a working Cargo project, Makefile
 with real targets, GitHub Actions CI and release workflows, packaging
 template stubs, and an initial git commit.
 
-### 3. Generate the task list
+### 3. Capture a feature as a PRD
 
-```
-/tasks
-```
-
-Claude reads your `CLAUDE.md` and produces `TASKS.md`. Review it — the
-Foundation section is fixed and cannot be reordered. Implementation tasks
-can be adjusted. When ready, confirm to continue.
-
-### 3a. Capture a feature as a PRD (optional, parallel flow)
-
-For feature ideas that deserve a fuller spec than a one-line task —
-especially when you want to do the thinking on a capable model and hand
-implementation off to a cheaper one — file a PRD instead:
+Every feature starts as a PRD filed on GitHub. Spend the planning
+tokens up front with a capable model; the resulting issue can be
+handed to a cheaper coding session later.
 
 ```
 /new-prd
@@ -251,7 +214,7 @@ a PRD (Problem, Solution, User Stories, Implementation Decisions,
 Testing Decisions, Out of Scope, Further Notes) and files it as a
 GitHub issue via `gh issue create`.
 
-When the PRD is ready to be broken into implementation tickets:
+### 4. Break the PRD into implementation slices
 
 ```
 /prd-to-issues <PRD-issue-number-or-URL>
@@ -264,23 +227,9 @@ relevant layer. Iterate with Claude on granularity and dependencies;
 on approval, the agent files each slice as a GitHub issue in
 dependency order.
 
-Edit an existing task that needs more detail or a different scope:
+### 5. Execute each slice
 
-```
-/edit-task [number]
-```
-
-If you omit the number, Claude lists all tasks and asks which one to
-edit. The task-editor subagent reads relevant code before the entry is
-rewritten in place.
-
-### 4. Execute
-
-`/init-project` handles the foundation (CI live, release pipeline live,
-make targets working) — so `/execute` assumes the project is already
-bootstrapped and focuses purely on shipping work.
-
-To implement a GitHub issue using test-driven development:
+To implement a single slice using test-driven development:
 
 ```
 /execute <issue-number-or-URL>
@@ -310,13 +259,10 @@ issue when you are ready.
 | Command | Description |
 |---|---|
 | `/init-project` | Scaffold a new project — creates Makefile, CI, packaging stubs, initial commit |
-| `/tasks` | Generate `TASKS.md` from `CLAUDE.md` with Foundation + Implementation sections |
-| `/execute <issue>` | Implement a single non-PRD GitHub issue using test-driven development — one squash-merged PR per issue |
 | `/new-prd` | Synthesise a PRD from conversation + codebase context, confirm modules with you, file as a GitHub issue |
 | `/prd-to-issues <issue>` | Break a PRD issue into vertical tracer-bullet implementation slices, iterate on granularity, file each as a dependent GitHub issue |
-| `/edit-task [N]` | Rewrite an existing task entry in place (number optional — lists tasks if omitted) |
+| `/execute <issue>` | Implement a single non-PRD GitHub issue using test-driven development — one squash-merged PR per issue |
 | `/commit` | Stage changes and create a conventional commit with approval |
-| `/continue` | Resume an interrupted `/execute` session — detects git/PR state and recovers |
 | `/pr-creator` | Push the current branch and open a GitHub pull request |
 | `/update-project` | Audit an existing project against the current plugin workflow and apply missing pieces |
 | `/init-rust-cli` | Type skill invoked by `/init-project` — can also be called directly |
@@ -353,9 +299,8 @@ myapp/
 ```
 
 The packaging stubs under `packaging/` and `scripts/` are intentionally
-incomplete at this stage. They are filled in by the **Finalise deb
-packaging** and **Finalise AUR packaging** tasks that `/tasks` adds at
-the end of `TASKS.md`, once the full set of installed files is known.
+incomplete at this stage. Finalise them as their own PRD → issue →
+`/execute` flow once the full set of installed files is known.
 
 ---
 
@@ -372,7 +317,7 @@ Create `skills/init-<type>/SKILL.md` in this repository. The skill must:
    format (npm publish, PyPI, Homebrew, etc.) — or skip packaging entirely
    if the type has none
 5. Make an initial `git commit`
-6. Tell the user to run `/tasks`
+6. Tell the user to run `/new-prd` to capture their first feature
 
 Register the new type in `skills/init-project/SKILL.md` under Step 2 so
 `/init-project` knows to offer it.
@@ -382,4 +327,5 @@ Register the new type in `skills/init-project/SKILL.md` under Step 2 so
 If your project type uses a different packaging format (Homebrew, npm,
 PyPI, snap, flatpak), create the equivalent of `init-rust-cli` for your
 type. The packaging stubs pattern — create templates with `TODO` markers,
-let `/tasks` generate finalisation tasks — applies to all types.
+leave them incomplete until the feature set stabilises — applies to all
+types.

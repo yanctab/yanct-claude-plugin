@@ -132,5 +132,6 @@ When all phases are merged, summarise:
   /plugin marketplace add claude-plugins-official/skill-creator
   /plugin install skill-creator@skill-creator
   ```
-- Next step: run `/tasks` — it will generate the implementation task list
-  from their CLAUDE.md so /execute can begin working through it
+- Next step: run `/new-prd` to capture the first feature as a PRD,
+  then `/prd-to-issues` to break it into implementation slices, and
+  `/execute <issue>` to implement each slice test-first
