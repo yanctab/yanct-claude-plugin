@@ -98,22 +98,13 @@ adds the post-edit lint hook:
             "command": "~/.claude/plugins/cache/yanct-claude-plugin/yanct-claude-plugin/0.1.0/hooks/post-edit-lint.sh"
           }
         ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/plugins/cache/yanct-claude-plugin/yanct-claude-plugin/0.1.0/hooks/post-commit-task-done.sh"
-          }
-        ]
       }
     ]
   }
 }
 ```
 
-Substitute the actual value of `$CLAUDE_PLUGIN_ROOT` in both hook command paths
+Substitute the actual value of `$CLAUDE_PLUGIN_ROOT` in the hook command path
 before writing — the literal `$CLAUDE_PLUGIN_ROOT` must not appear in the output file.
 
 ## Step 4 — Update .claude/CLAUDE.md to declare skill-creator dependency
@@ -151,6 +142,8 @@ git commit -m "chore(scaffold): add README, settings, and gitignore"
 ## Step 7 — Report
 
 Summarise all files created. Tell the user the scaffold is complete and:
-- The next step is `/tasks` to generate the implementation task list
+- The next step is `/new-prd` to capture the first feature as a PRD,
+  then `/prd-to-issues` to break it into slices, and `/execute <issue>`
+  to implement each slice test-first
 - The skill-creator plugin should be installed in Claude Code before
   working on skills (print the install commands)

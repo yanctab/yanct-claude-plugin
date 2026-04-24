@@ -140,28 +140,19 @@ that adds rust-specific permissions and the post-edit lint hook:
             "command": "~/.claude/plugins/cache/yanct-claude-plugin/yanct-claude-plugin/0.1.0/hooks/post-edit-lint.sh"
           }
         ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/plugins/cache/yanct-claude-plugin/yanct-claude-plugin/0.1.0/hooks/post-commit-task-done.sh"
-          }
-        ]
       }
     ]
   }
 }
 ```
 
-Substitute the actual value of `$CLAUDE_PLUGIN_ROOT` in both hook command paths
+Substitute the actual value of `$CLAUDE_PLUGIN_ROOT` in the hook command path
 before writing — the literal `$CLAUDE_PLUGIN_ROOT` must not appear in the output file.
 
 ## Step 5 — Install local toolchain
 
 Install everything needed so that `make build`, `make lint`, and `make package`
-all work locally before `/execute` is run.
+all work locally before any feature work begins.
 
 If rustup is not available, note it and skip each rustup step — CI will handle it.
 
@@ -197,4 +188,7 @@ git commit -m "chore(scaffold): add docs, settings, and gitignore"
 ## Step 8 — Report
 
 Summarise all files created. List the stub files that need implementation.
-Tell the user the scaffold is complete and the next step is `/tasks`.
+Tell the user the scaffold is complete and the next step is to run
+`/new-prd` to capture a feature as a PRD, then `/prd-to-issues` to
+break it into implementation slices, and `/execute <issue>` to
+implement each slice test-first.

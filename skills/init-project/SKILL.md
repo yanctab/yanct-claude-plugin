@@ -176,7 +176,8 @@ appropriate skill:
 - claude-plugin → invoke /init-claude-plugin
 - web → invoke /init-web (if not installed, tell the user and stop)
 - other → tell the user no type-specific skill exists yet; they should
-  implement the Makefile targets manually and run /tasks when ready
+  implement the Makefile targets manually before starting any feature
+  work
 
 If the requested type skill does not exist, list the currently available
 type skills and suggest the user check the plugin repository for new ones
@@ -186,4 +187,6 @@ or implement their own `skills/init-<type>/SKILL.md`.
 
 When the project-type skill completes, summarise:
 - What was created
-- What the next step is (e.g. "run /tasks to plan implementation")
+- What the next step is (e.g. "run /new-prd to capture your first
+  feature as a PRD, then /prd-to-issues to break it into
+  implementation slices")
