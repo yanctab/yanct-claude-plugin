@@ -75,6 +75,16 @@ The intended workflow: spend planning tokens up front with a capable
 model, then hand the resulting issue to a cheaper coding session for
 implementation.
 
+**`/prd-to-issues`** takes a PRD issue (the one `/new-prd` just filed,
+or any existing PRD-shaped GitHub issue) and breaks it into
+independently-grabbable implementation issues using vertical
+tracer-bullet slices — each slice a narrow but complete path through
+every relevant layer. The issue-slicer subagent fetches the PRD,
+explores the codebase, drafts a numbered breakdown (title, HITL/AFK,
+blocked-by, user stories covered, layers touched), iterates with you
+until you approve, then files each slice as its own issue in
+dependency order so *Blocked by* fields reference real issue numbers.
+
 **`/edit-task`** selects an existing task by number, enters planning
 mode, presents the current entry, and rewrites it in place after
 confirming what to change. The task-editor subagent runs the same
@@ -90,6 +100,11 @@ Subagents keep verbose output out of the main session:
   drafts the PRD and files it as a GitHub issue. Heavy research and
   template synthesis happen in the subagent, so the main session only
   sees the resulting issue URL.
+- **issue-slicer** — for `/prd-to-issues`: fetches the parent PRD,
+  explores the codebase for integration layers, drafts vertical
+  tracer-bullet slices, and files each approved slice as a GitHub
+  issue. The main session only sees the slice breakdown and the
+  filed issue URLs.
 - **task-editor** — does codebase research for `/edit-task`. Reads
   relevant code before the task entry is rewritten.
 - **pr-creator** — opens the GitHub PR and returns only the PR URL.
@@ -229,6 +244,19 @@ a PRD (Problem, Solution, User Stories, Implementation Decisions,
 Testing Decisions, Out of Scope, Further Notes) and files it as a
 GitHub issue via `gh issue create`.
 
+When the PRD is ready to be broken into implementation tickets:
+
+```
+/prd-to-issues <PRD-issue-number-or-URL>
+```
+
+Claude fetches the PRD, researches integration layers via the
+issue-slicer subagent, and proposes a numbered breakdown of vertical
+tracer-bullet slices — each a narrow end-to-end path through every
+relevant layer. Iterate with Claude on granularity and dependencies;
+on approval, the agent files each slice as a GitHub issue in
+dependency order.
+
 Edit an existing task that needs more detail or a different scope:
 
 ```
@@ -270,6 +298,7 @@ reminder of how to trigger a release with `make release`.
 | `/tasks` | Generate `TASKS.md` from `CLAUDE.md` with Foundation + Implementation sections |
 | `/execute` | Work through `TASKS.md`: Foundation phase, then one implementation task at a time |
 | `/new-prd` | Synthesise a PRD from conversation + codebase context, confirm modules with you, file as a GitHub issue |
+| `/prd-to-issues <issue>` | Break a PRD issue into vertical tracer-bullet implementation slices, iterate on granularity, file each as a dependent GitHub issue |
 | `/edit-task [N]` | Rewrite an existing task entry in place (number optional — lists tasks if omitted) |
 | `/commit` | Stage changes and create a conventional commit with approval |
 | `/continue` | Resume an interrupted `/execute` session — detects git/PR state and recovers |
