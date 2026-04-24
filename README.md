@@ -63,10 +63,17 @@ merge, or merged PR not yet pulled — and takes the correct recovery
 action for each state. On a clean post-merge state it advances to the
 next unchecked task automatically.
 
-**`/new-task`** adds a single new task to `TASKS.md` without touching
-any code. Claude clarifies intent, delegates codebase research to the
-task-researcher subagent, and appends a fully-specified task entry
-(acceptance criteria, dependencies, files to modify, risks).
+**`/new-prd`** captures a feature idea as a Product Requirements
+Document and files it as a GitHub issue — no code changes. Claude
+delegates codebase research to the prd-researcher subagent,
+synthesises a module sketch from the current conversation and the
+codebase (no interview), checks the sketch with you (the only
+freeform confirmation step), then drafts a PRD — Problem Statement,
+Solution, User Stories, Implementation Decisions, Testing Decisions,
+Out of Scope, Further Notes — and runs `gh issue create` to file it.
+The intended workflow: spend planning tokens up front with a capable
+model, then hand the resulting issue to a cheaper coding session for
+implementation.
 
 **`/edit-task`** selects an existing task by number, enters planning
 mode, presents the current entry, and rewrites it in place after
@@ -79,10 +86,11 @@ Subagents keep verbose output out of the main session:
 
 - **task-runner** — implements a task in a subagent (all file edits, shell
   commands, lint/test cycles). The main session only sees the summary.
-- **task-researcher** — does deep codebase research for `/new-task` before
-  writing a task entry. Reads files and traces dependencies without
-  polluting the main context.
-- **task-editor** — same as task-researcher, but for `/edit-task`. Reads
+- **prd-researcher** — does deep codebase research for `/new-prd`, then
+  drafts the PRD and files it as a GitHub issue. Heavy research and
+  template synthesis happen in the subagent, so the main session only
+  sees the resulting issue URL.
+- **task-editor** — does codebase research for `/edit-task`. Reads
   relevant code before the task entry is rewritten.
 - **pr-creator** — opens the GitHub PR and returns only the PR URL.
 - **test-runner** — runs `make test`, returns only failing test names and
@@ -204,17 +212,22 @@ Claude reads your `CLAUDE.md` and produces `TASKS.md`. Review it — the
 Foundation section is fixed and cannot be reordered. Implementation tasks
 can be adjusted. When ready, confirm to continue.
 
-### 3a. Refine the task list (optional)
+### 3a. Capture a feature as a PRD (optional, parallel flow)
 
-Add tasks that were not captured automatically:
+For feature ideas that deserve a fuller spec than a one-line task —
+especially when you want to do the thinking on a capable model and hand
+implementation off to a cheaper one — file a PRD instead:
 
 ```
-/new-task
+/new-prd
 ```
 
-Claude asks what you want to add, delegates codebase research to the
-task-researcher subagent, then appends a fully-specified task entry with
-acceptance criteria, dependencies, files to modify, and risks.
+Claude researches the codebase via the prd-researcher subagent,
+synthesises a module sketch from the current conversation and the
+codebase (no interview), shows it to you to sanity-check, then drafts
+a PRD (Problem, Solution, User Stories, Implementation Decisions,
+Testing Decisions, Out of Scope, Further Notes) and files it as a
+GitHub issue via `gh issue create`.
 
 Edit an existing task that needs more detail or a different scope:
 
@@ -256,7 +269,7 @@ reminder of how to trigger a release with `make release`.
 | `/init-project` | Scaffold a new project — creates Makefile, CI, packaging stubs, initial commit |
 | `/tasks` | Generate `TASKS.md` from `CLAUDE.md` with Foundation + Implementation sections |
 | `/execute` | Work through `TASKS.md`: Foundation phase, then one implementation task at a time |
-| `/new-task` | Research a task idea and append a fully-specified entry to `TASKS.md` |
+| `/new-prd` | Synthesise a PRD from conversation + codebase context, confirm modules with you, file as a GitHub issue |
 | `/edit-task [N]` | Rewrite an existing task entry in place (number optional — lists tasks if omitted) |
 | `/commit` | Stage changes and create a conventional commit with approval |
 | `/continue` | Resume an interrupted `/execute` session — detects git/PR state and recovers |
