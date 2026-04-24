@@ -39,11 +39,20 @@ clean:
 
 ## install - copy working directory into the local Claude plugin cache
 install:
-	@echo "Installing $(PLUGIN_NAME)@$(VERSION) to local Claude plugin cache..."
-	@mkdir -p "$(CACHE_DIR)"
-	@rsync -a --delete --exclude='.git/' --exclude='.claude/' . "$(CACHE_DIR)/"
-	@echo "Installed to: $(CACHE_DIR)"
-	@echo "Reload Claude Code to pick up changes."
+	@set -e; \
+	mkdir -p "$(CACHE_DIR)"; \
+	SRC=$$(realpath .); \
+	DST=$$(realpath "$(CACHE_DIR)"); \
+	case "$$SRC/" in "$$DST"/*) \
+	  echo "ERROR: CWD ($$SRC) is inside CACHE_DIR ($$DST) — refusing to rsync into itself." >&2; \
+	  exit 1 ;; esac; \
+	case "$$DST/" in "$$SRC"/*) \
+	  echo "ERROR: CACHE_DIR ($$DST) is inside CWD ($$SRC) — refusing to rsync into itself." >&2; \
+	  exit 1 ;; esac; \
+	echo "Installing $(PLUGIN_NAME)@$(VERSION) to local Claude plugin cache..."; \
+	rsync -a --delete --exclude='.git/' --exclude='.claude/' "$$SRC/" "$$DST/"; \
+	echo "Installed to: $$DST"; \
+	echo "Reload Claude Code to pick up changes."
 
 ## setup - install tools required to work on this plugin
 setup:
