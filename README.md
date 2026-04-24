@@ -32,6 +32,7 @@ your local development environment.
 
 ```
 Write CLAUDE.md → /init-project → /tasks → review TASKS.md → /execute
+                                           └ or /new-prd → /prd-to-issues → /execute <issue>
 ```
 
 Each phase has a clear purpose and produces a concrete artifact:
@@ -48,20 +49,22 @@ six mandatory tasks that verify every make target works, push the scaffold
 to GitHub, and confirm the CI and release pipelines are live end-to-end
 before a single line of implementation is written.
 
-**`/execute`** works through `TASKS.md` one task at a time. Foundation
-tasks are handled with specific logic for the human interaction points
-(GitHub repo creation, CI secrets). Implementation tasks follow a strict
-per-task loop: create branch → implement (via task-runner subagent) →
-mark task done in TASKS.md → open PR with the implementation summary as
-body → wait for merge confirmation → ask what to do next. Claude never
-auto-continues to the next task and never skips the PR step.
+**`/execute`** implements a single GitHub issue using test-driven
+development. It takes an issue number or URL as input, hands off to
+the issue-runner subagent, and prints the resulting PR URL. The agent
+rejects PRD issues (run `/prd-to-issues` on those first), creates a
+branch, then runs a red-green-[refactor] loop per acceptance criterion
+on the issue: write one failing test, write the minimum code to make
+it pass, commit, optionally refactor only the code just written.
+Every test and every line of code traces back to an acceptance
+criterion on the issue — no speculative features. One issue, one
+squash-merged PR.
 
 **`/continue`** resumes an interrupted `/execute` session. It inspects
 `git status`, `git log`, and `gh pr list` to classify where the session
 stopped — uncommitted work, committed but no PR, open PR waiting for
 merge, or merged PR not yet pulled — and takes the correct recovery
-action for each state. On a clean post-merge state it advances to the
-next unchecked task automatically.
+action for each state.
 
 **`/new-prd`** captures a feature idea as a Product Requirements
 Document and files it as a GitHub issue — no code changes. Claude
@@ -94,8 +97,12 @@ codebase research as task-researcher before updating the block.
 
 Subagents keep verbose output out of the main session:
 
-- **task-runner** — implements a task in a subagent (all file edits, shell
-  commands, lint/test cycles). The main session only sees the summary.
+- **task-runner** — implements a task from `TASKS.md` in a subagent (all
+  file edits, shell commands, lint/test cycles). The main session only
+  sees the summary.
+- **issue-runner** — implements a single GitHub issue in a subagent using
+  test-driven red-green-[refactor] cycles, commits per cycle, and opens
+  a squash-merge PR. The main session only sees the final report.
 - **prd-researcher** — does deep codebase research for `/new-prd`, then
   drafts the PRD and files it as a GitHub issue. Heavy research and
   template synthesis happen in the subagent, so the main session only
@@ -129,8 +136,8 @@ be filled in.
 
 The `/tasks` skill detects which packaging stubs exist and adds the
 appropriate finalisation tasks at the end of `TASKS.md`. These are
-executed by `/execute` in the same lint/test/commit loop as every other
-task.
+worked through with the task-runner subagent in the same lint/test/commit
+loop as every other task.
 
 ---
 
@@ -269,24 +276,32 @@ rewritten in place.
 
 ### 4. Execute
 
+`/init-project` handles the foundation (CI live, release pipeline live,
+make targets working) — so `/execute` assumes the project is already
+bootstrapped and focuses purely on shipping work.
+
+To implement a GitHub issue using test-driven development:
+
 ```
-/execute
+/execute <issue-number-or-URL>
 ```
 
-**Foundation phase** — verifies each make target in order, asks whether
-to create the GitHub repo via `gh` or use an existing one, opens a test
-PR to confirm CI runs end to end, pushes a test release tag to confirm
-the release pipeline runs end to end. Reports `Foundation complete ✓`
-and waits for your confirmation before proceeding.
+Claude invokes the issue-runner subagent which:
 
-**Implementation phase** — one task at a time: implement → lint (hook
-fires automatically on every file edit) → test (subagent returns failures
-only) → doc update (task-runner checks README.md, manpage stubs, and
-inline examples and blocks the commit if any need updating) → commit.
-Checkpoints after major groups.
+- Fetches the issue and rejects it if it looks like a PRD (run
+  `/prd-to-issues` on the PRD first to get implementation slices).
+- Creates a feature branch off `main`.
+- For each checkbox in the issue's `## Acceptance criteria`, runs a
+  red-green loop: write one failing test through the public interface,
+  write the minimum code to make it pass, commit, optionally refactor
+  only the code just written.
+- Runs the doc-update checklist (README, manpage stubs, inline examples)
+  if any user-facing interface changed.
+- Opens a squash-merge PR with `Closes #<issue-number>` and prints the
+  URL.
 
-**Completion** — final lint + test pass, summary of what was built,
-reminder of how to trigger a release with `make release`.
+Review the PR and squash-merge it. Run `/execute` again on the next
+issue when you are ready.
 
 ---
 
@@ -296,7 +311,7 @@ reminder of how to trigger a release with `make release`.
 |---|---|
 | `/init-project` | Scaffold a new project — creates Makefile, CI, packaging stubs, initial commit |
 | `/tasks` | Generate `TASKS.md` from `CLAUDE.md` with Foundation + Implementation sections |
-| `/execute` | Work through `TASKS.md`: Foundation phase, then one implementation task at a time |
+| `/execute <issue>` | Implement a single non-PRD GitHub issue using test-driven development — one squash-merged PR per issue |
 | `/new-prd` | Synthesise a PRD from conversation + codebase context, confirm modules with you, file as a GitHub issue |
 | `/prd-to-issues <issue>` | Break a PRD issue into vertical tracer-bullet implementation slices, iterate on granularity, file each as a dependent GitHub issue |
 | `/edit-task [N]` | Rewrite an existing task entry in place (number optional — lists tasks if omitted) |
