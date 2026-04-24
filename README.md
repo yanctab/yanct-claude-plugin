@@ -65,14 +65,15 @@ next unchecked task automatically.
 
 **`/new-prd`** captures a feature idea as a Product Requirements
 Document and files it as a GitHub issue — no code changes. Claude
-confirms the feature title, delegates codebase research to the
-prd-researcher subagent, checks the resulting module sketch with you
-(the only freeform confirmation step), then drafts a PRD — Problem
-Statement, Solution, User Stories, Implementation Decisions, Testing
-Decisions, Out of Scope, Further Notes — and runs `gh issue create`
-to file it. The intended workflow: spend planning tokens up front
-with a capable model, then hand the resulting issue to a cheaper
-coding session for implementation.
+delegates codebase research to the prd-researcher subagent,
+synthesises a module sketch from the current conversation and the
+codebase (no interview), checks the sketch with you (the only
+freeform confirmation step), then drafts a PRD — Problem Statement,
+Solution, User Stories, Implementation Decisions, Testing Decisions,
+Out of Scope, Further Notes — and runs `gh issue create` to file it.
+The intended workflow: spend planning tokens up front with a capable
+model, then hand the resulting issue to a cheaper coding session for
+implementation.
 
 **`/edit-task`** selects an existing task by number, enters planning
 mode, presents the current entry, and rewrites it in place after
@@ -221,11 +222,12 @@ implementation off to a cheaper one — file a PRD instead:
 /new-prd
 ```
 
-Claude confirms the feature title, researches the codebase via the
-prd-researcher subagent, shows you a module sketch to sanity-check,
-then drafts a PRD (Problem, Solution, User Stories, Implementation
-Decisions, Testing Decisions, Out of Scope, Further Notes) and files
-it as a GitHub issue via `gh issue create`.
+Claude researches the codebase via the prd-researcher subagent,
+synthesises a module sketch from the current conversation and the
+codebase (no interview), shows it to you to sanity-check, then drafts
+a PRD (Problem, Solution, User Stories, Implementation Decisions,
+Testing Decisions, Out of Scope, Further Notes) and files it as a
+GitHub issue via `gh issue create`.
 
 Edit an existing task that needs more detail or a different scope:
 
