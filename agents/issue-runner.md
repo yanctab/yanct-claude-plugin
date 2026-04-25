@@ -96,6 +96,11 @@ On acceptance, parse:
 - `## Blocked by` (warn the orchestrator if any blocker is still
   open)
 - `## Parent` (PRD reference, used later for the PR body)
+- `## Files` (advisory implementation context — existing function
+  signatures, struct/enum definitions, and patterns for each file,
+  plus a one-sentence change description; use to orient implementation
+  without needing to explore the codebase first; do not be constrained
+  if TDD or the codebase reveals a better path)
 
 ### Step 2 — Project context
 
