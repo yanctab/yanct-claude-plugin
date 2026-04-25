@@ -32,5 +32,11 @@ integration layer. Requires a PRD issue number or URL as input.
    prior breakdown and the revision notes; it returns an updated
    breakdown. Iterate until the developer explicitly approves.
 
-5. On approval, invoke the agent one more time to file the issues in
+5. On approval, invoke the agent with the approved breakdown to run
+   the Enrich pass. It reads each slice's identified files and
+   extracts the relevant existing function signatures, struct/enum
+   definitions, and patterns — so the filed issues are self-sufficient
+   for a smaller model to implement without further exploration.
+
+6. Invoke the agent with the enriched breakdown to file the issues in
    dependency order. Print the resulting issue URLs, one per line.

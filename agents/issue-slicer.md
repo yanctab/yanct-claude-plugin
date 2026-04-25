@@ -1,6 +1,6 @@
 ---
 name: issue-slicer
-description: Breaks a PRD GitHub issue into vertical-slice implementation issues and files them. Invoked by /prd-to-issues in three shapes — draft (fetch PRD, explore, propose breakdown), revise (update breakdown from developer notes), file (create issues in dependency order).
+description: Breaks a PRD GitHub issue into vertical-slice implementation issues and files them. Invoked by /prd-to-issues in four shapes — draft (fetch PRD, explore, propose breakdown), revise (update breakdown from developer notes), enrich (extract per-file interface context for approved slices), file (create issues in dependency order).
 tools: Read, Glob, Grep, Write, Agent, Bash(gh *)
 ---
 
@@ -30,14 +30,16 @@ slices.
 
 ## Process
 
-Runs in three shapes, distinguished by what the invoker provides:
+Runs in four shapes, distinguished by what the invoker provides:
 
 - **Draft pass** — input is a PRD issue number or URL. Do steps
   1–3, return the breakdown.
 - **Revise pass** — inputs are the prior breakdown and the
   developer's revision notes. Do step 4, return the updated
   breakdown.
-- **File pass** — input is the approved breakdown. Do step 5,
+- **Enrich pass** — input is the approved breakdown. Do step 5,
+  return the enriched breakdown.
+- **File pass** — input is the enriched breakdown. Do step 6,
   return the filed issue URLs.
 
 ### 1. Fetch the PRD
@@ -78,6 +80,9 @@ Break the PRD into tracer-bullet slices. For each slice, capture:
 - **User stories covered** — which PRD user stories this addresses,
   by number from the PRD's User Stories list
 - **Layers** — which integration layers this slice touches
+- **Files** — approximate file paths this slice is expected to touch,
+  each with a one-line description of the likely change; mark new
+  files with `(create)`. These are refined in the Enrich pass.
 
 Return the breakdown as a numbered list. Do not file any issues.
 
@@ -88,7 +93,34 @@ split slices, adjust HITL/AFK, fix dependencies). Re-check that each
 slice still traces to user stories. Return the updated breakdown in
 the same shape as step 3.
 
-### 5. File the issues
+### 5. Enrich the breakdown
+
+For each slice in the approved breakdown, launch one Explore agent
+(run all agents in parallel) with this prompt, substituting the
+slice's title and its Files list:
+
+> For the slice "<slice title>", read each of these files:
+> <list from draft Files field>.
+>
+> For each file that exists:
+> - List the function signatures, struct/enum definitions, and
+>   module-level patterns that this slice will need to extend or
+>   modify (verbatim, not paraphrased).
+> - Write one sentence describing what specifically needs to change.
+>
+> For each file marked (create), describe what interface it should
+> expose based on the slice's acceptance criteria and the existing
+> patterns you observe in the codebase.
+>
+> Return results in this exact format per file:
+>   path: <path>
+>   context: <relevant existing signatures/definitions, one per line>
+>   change: <one sentence>
+
+Update each slice's Files field with the enriched per-file output.
+Return the enriched breakdown.
+
+### 6. File the issues
 
 For each approved slice, run `gh issue create` with the template
 below. File **in dependency order** (blockers first) so later slices
@@ -118,12 +150,24 @@ not layer-by-layer implementation.
 
 Or "None — can start immediately" if there are no blockers.
 
+## Files
+
+<!-- Advisory: starting point only — not a contract. TDD may reveal a different path. -->
+
+- `path/to/file.rs`
+  - Context: `fn existing_fn(arg: Type) -> Result<Out>`, `struct Foo { field: Type }`
+  - Change: one sentence describing what needs to change
+
+- `path/to/new_file.rs` (create)
+  - Change: one sentence describing the interface to expose
+
 </issue-template>
 
 Use `gh issue create --title "<slice title>" --body-file
 /tmp/slice-<N>.md --assignee @me` for each slice, where `<N>` is the
-slice's number in the approved breakdown. Do NOT close or modify the
-parent PRD issue.
+slice's number in the approved breakdown. Populate `## Files` from the
+enriched breakdown's Files field using the multi-line context+change
+format. Do NOT close or modify the parent PRD issue.
 
 Return the filed issue URLs as a list, one per line, in the same
 order the slices were presented.
