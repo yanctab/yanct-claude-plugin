@@ -113,7 +113,16 @@ release:
 	git tag -a "v$$NEW" -m "Release v$$NEW"; \
 	git push origin HEAD; \
 	git push origin "v$$NEW"; \
-	echo "Released v$$NEW"
+	echo ""; \
+	echo "✓ Released v$$NEW"; \
+	echo ""; \
+	echo "Next step: Update yanctab-marketplace"; \
+	echo "  1. Edit .claude-plugin/marketplace.json in yanctab-marketplace repo"; \
+	echo "  2. Update ywflow entry:"; \
+	echo "     - Change ref to: \"v$$NEW\""; \
+	echo "     - Change version to: \"$$NEW\""; \
+	echo "  3. Commit and push"; \
+	echo ""
 
 ## package - no packaging step for Claude plugins
 package:
