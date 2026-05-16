@@ -50,6 +50,9 @@ test:
 	@echo ""
 	@echo "Running .claude/CLAUDE.md tests..."
 	@bash tests/test-claude-md.sh
+	@echo ""
+	@echo "Running ywflow.yaml tests..."
+	@bash tests/test-ywflow-yaml.sh
 
 ## clean - nothing to clean for a plugin
 clean:
