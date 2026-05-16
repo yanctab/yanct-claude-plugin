@@ -14,16 +14,5 @@
     "cli",
     "ci-cd",
     "scaffold"
-  ],
-  "skills": [
-    "planning-session",
-    "new-prd",
-    "prd-to-issues",
-    "execute",
-    "init-project",
-    "init-rust-cli",
-    "init-claude-plugin",
-    "commit",
-    "update-project"
   ]
 }
