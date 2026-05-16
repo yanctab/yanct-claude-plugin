@@ -42,17 +42,18 @@ structure with a Makefile, then hands off to the appropriate type skill
 to implement the targets and set up the toolchain, CI pipeline, and
 packaging stubs. This bootstrap is the only non-issue-driven step.
 
-**`/new-prd`** captures a feature idea as a Product Requirements
-Document and files it as a GitHub issue — no code changes. Claude
-delegates codebase research to the prd-researcher subagent,
-synthesises a module sketch from the current conversation and the
-codebase (no interview), checks the sketch with you (the only
-freeform confirmation step), then drafts a PRD — Problem Statement,
-Solution, User Stories, Implementation Decisions, Testing Decisions,
-Out of Scope, Further Notes — and runs `gh issue create` to file it.
-The intended workflow: spend planning tokens up front with a capable
-model, then hand the resulting issue to a cheaper coding session for
-implementation.
+**`/new-prd [file.md]`** captures a feature idea as a Product Requirements
+Document and files it as a GitHub issue — no code changes. In synthesis-mode
+(no argument), Claude delegates codebase research to the prd-researcher
+subagent, synthesises a module sketch from the current conversation and the
+codebase (no interview), checks the sketch with you (the only freeform
+confirmation step), then drafts a PRD — Problem Statement, Solution, User
+Stories, Implementation Decisions, Testing Decisions, Out of Scope, Further
+Notes — and runs `gh issue create` to file it. In file-mode (with a .md file
+path), it validates that the file contains all required sections and an H1
+title, then files it directly without interviewing. The intended workflow:
+spend planning tokens up front with a capable model, then hand the resulting
+issue to a cheaper coding session for implementation.
 
 **`/prd-to-issues`** takes a PRD issue (the one `/new-prd` just filed,
 or any existing PRD-shaped GitHub issue) and breaks it into
@@ -259,7 +260,7 @@ issue when you are ready.
 | Command | Description |
 |---|---|
 | `/init-project` | Scaffold a new project — creates Makefile, CI, packaging stubs, initial commit |
-| `/new-prd` | Synthesise a PRD from conversation + codebase context, confirm modules with you, file as a GitHub issue |
+| `/new-prd [file.md]` | Synthesise a PRD from conversation + codebase context, confirm modules with you, file as a GitHub issue; or validate and file a pre-written PRD from a markdown file |
 | `/prd-to-issues <issue>` | Break a PRD issue into vertical tracer-bullet implementation slices, iterate on granularity, file each as a dependent GitHub issue |
 | `/execute <issue>` | Implement a single non-PRD GitHub issue using test-driven development — one squash-merged PR per issue |
 | `/commit` | Stage changes and create a conventional commit with approval |

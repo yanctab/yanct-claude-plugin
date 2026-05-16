@@ -1,5 +1,5 @@
 ---
-description: Synthesise a PRD from the current conversation and codebase context, then submit it as a GitHub issue. Use when a feature idea is ready to be captured as an implementable spec a coding session (possibly on a different model) can pick up.
+description: Capture a PRD and file it as a GitHub issue. Supports synthesis-mode (no argument — synthesise from conversation and codebase) and file-mode (with .md file path — validate and file a pre-written PRD).
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Agent, Bash
 ---
