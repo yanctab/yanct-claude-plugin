@@ -51,7 +51,7 @@ Create .claude/CLAUDE.md with the following content exactly:
 
 @../CLAUDE.md
 
-@~/.claude/plugins/cache/yanct-claude-plugin/CLAUDE.md
+@${CLAUDE_PLUGIN_ROOT}/CLAUDE.md
 
 ## Version Control Rules
 
