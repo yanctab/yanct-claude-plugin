@@ -61,7 +61,7 @@ clean:
 
 ## install - register marketplace and install plugin via Claude CLI
 install:
-	@MARKETPLACE_DIR=$$(realpath ../yanctab-marketplace); \
+	@MARKETPLACE_DIR=$$(realpath ../yanctab-claude-marketplace); \
 	if [ ! -d "$$MARKETPLACE_DIR/.claude-plugin" ]; then \
 	  echo "ERROR: yanctab-marketplace not found at ../yanctab-marketplace"; \
 	  echo "Ensure yanctab-marketplace repo is cloned next to this repo."; \
@@ -72,12 +72,15 @@ install:
 	echo ""; \
 	echo "Installing ywflow-dev@yanctab-marketplace..."; \
 	claude plugin install ywflow-dev@yanctab-marketplace; \
+	echo "Disable official ywflow@yanctab-marketplace..."; \
+	claude plugin disable ywflow@yanctab-marketplace; \
 	echo ""; \
 	echo "✓ Dev plugin installed successfully!"; \
 	echo "Try running a skill: /ywflow:execute"; \
 	echo ""; \
 	echo "To install the official release instead, run:"; \
 	echo "  claude plugin install ywflow@yanctab-marketplace"
+	echo "  claude plugin disable ywflow-dev@yanctab-marketplace"
 
 ## setup - install tools required to work on this plugin
 setup:
