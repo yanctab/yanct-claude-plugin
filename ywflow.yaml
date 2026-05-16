@@ -1,0 +1,80 @@
+context:
+  planning_model: Opus
+  breakdown_model: Sonnet
+  execute_model: Sonnet
+  project_dir: ${cwd}
+  plugin: ywflow
+
+cli:
+  command: claude
+
+plugins:
+  - name: local-skills
+    source: local
+    path: .claude/skills
+
+workflow:
+  session:
+    description: "A deep dive interactive planning session producing a PRD"
+    args:
+      - name: description
+        accepts:
+          - string
+        required: true
+        help: "A short description to get the interactive planning session going"
+    cli:
+      args:
+        - --model
+        - ${planning_model}
+        - --worktree
+        - plan-session
+        - "/${plugin}:planning-session ${description}"
+
+  plan:
+    description: "Plan the work: analyse the task and produce a PRD"
+    args:
+      - name: task
+        accepts:
+          - string
+        required: true
+        help: "A description of the task to plan"
+    cli:
+      args:
+        - --model
+        - ${planning_model}
+        - --worktree
+        - prd
+        - "/${plugin}:new-prd ${task}"
+
+  breakdown:
+    description: "Break down the PRD into implementation slices"
+    args:
+      - name: input
+        accepts:
+          - file
+          - url
+        required: true
+        help: "Path or URL of the PRD to break down"
+    cli:
+      args:
+        - --model
+        - ${breakdown_model}
+        - --worktree
+        - breakdown-session
+        - "/${plugin}:prd-to-issues ${input}"
+
+  execute:
+    description: "Execute a single implementation slice"
+    args:
+      - name: issue
+        accepts:
+          - url
+        required: true
+        help: "GitHub issue URL for the slice to implement"
+    cli:
+      args:
+        - --model
+        - ${execute_model}
+        - --worktree
+        - execute-session
+        - "/${plugin}:execute ${issue}"
