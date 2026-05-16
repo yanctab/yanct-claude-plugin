@@ -44,6 +44,9 @@ test:
 	@echo ""
 	@echo "Running manifest tests..."
 	@bash tests/test-manifests.sh
+	@echo ""
+	@echo "Running settings tests..."
+	@bash tests/test-settings.sh
 
 ## clean - nothing to clean for a plugin
 clean:
