@@ -1,8 +1,7 @@
 # Claude Code Context
 
 @../CLAUDE.md
-
-@~/.claude/plugins/cache/yanct-claude-plugin/yanct-claude-plugin/0.1.0/CLAUDE.md
+@${CLAUDE_PLUGIN_ROOT}/CLAUDE.md
 
 ## Version Control Rules
 
