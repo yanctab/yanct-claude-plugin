@@ -23,7 +23,7 @@ lint:
 	@jq . .claude-plugin/marketplace.json > /dev/null
 	@echo "JSON validation passed."
 
-## test - check required plugin files exist
+## test - check required plugin files exist and run skill tests
 test:
 	@echo "Checking plugin structure..."
 	@test -f .claude-plugin/plugin.json      || (echo "ERROR: missing .claude-plugin/plugin.json"      && exit 1)
@@ -32,6 +32,9 @@ test:
 	@test -d skills   || (echo "ERROR: missing skills/ directory"   && exit 1)
 	@test -d agents   || (echo "ERROR: missing agents/ directory"   && exit 1)
 	@echo "Structure check passed."
+	@echo ""
+	@echo "Running skill tests..."
+	@bash tests/test-planning-session.sh
 
 ## clean - nothing to clean for a plugin
 clean:
