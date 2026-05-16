@@ -45,6 +45,9 @@ test:
 	@echo "Running manifest tests..."
 	@bash tests/test-manifests.sh
 	@echo ""
+	@echo "Running README tests..."
+	@bash tests/test-readme.sh
+	@echo ""
 	@echo "Running settings tests..."
 	@bash tests/test-settings.sh
 	@echo ""

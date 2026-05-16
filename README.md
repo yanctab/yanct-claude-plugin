@@ -1,4 +1,4 @@
-# yanct-claude-plugin
+# ywflow-claude-plugin
 
 A Claude Code plugin that gives you a repeatable, deterministic development
 workflow for new projects. Instead of rediscovering the same decisions on
@@ -148,8 +148,8 @@ welcome.
 In any Claude Code session, run these two commands:
 
 ```
-/plugin marketplace add yanctab/yanct-claude-plugin
-/plugin install yanct-claude-plugin@yanct-claude-plugin
+/plugin marketplace add yanctab/ywflow-claude-plugin
+/plugin install ywflow@ywflow
 ```
 
 The first command registers the GitHub repository as a plugin marketplace.
