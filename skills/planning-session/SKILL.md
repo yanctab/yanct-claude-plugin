@@ -8,3 +8,7 @@ allowed-tools: Read, Glob, Grep, Write, Agent, Bash
 # Planning Session
 
 Ask questions one at a time — never batch multiple questions in a single turn.
+
+Before each question, scan the codebase using Read, Glob, and Grep to gather
+relevant context. If a question can be answered from codebase evidence alone,
+answer it yourself and move on without asking the user.

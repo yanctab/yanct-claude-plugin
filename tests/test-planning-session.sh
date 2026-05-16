@@ -24,6 +24,10 @@ check_criterion() {
 check_criterion "asks questions strictly one at a time" \
     "grep -qi 'one.*question.*at a time\|question per turn\|one at a time' '$SKILL_FILE'"
 
+# Criterion 2: codebase scan before each question; answers itself if codebase evidence suffices
+check_criterion "scans codebase before each question and self-answers when evidence exists" \
+    "grep -qi 'read\|glob\|grep' '$SKILL_FILE' && grep -qi 'codebase\|scan' '$SKILL_FILE' && grep -qi 'answer.*itself\|without asking\|codebase.*alone\|codebase.*evidence' '$SKILL_FILE'"
+
 echo ""
 if [ $ERRORS -eq 0 ]; then
     echo "All tests passed."
