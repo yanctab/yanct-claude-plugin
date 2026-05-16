@@ -11,65 +11,89 @@ Capture a feature idea as a PRD and file it as a GitHub issue.
 Synthesise from the current conversation and the codebase — do NOT
 interview the developer. No code changes.
 
-## Process
+## Step 1 — Detect mode
 
-### File-mode (with `.md` file argument)
+Check if the user provided an argument when invoking `/new-prd`:
 
-When invoked with a path to a `.md` file (e.g., `/new-prd ./prd.md`):
+- If **no argument** was provided: proceed to **synthesis-mode** (Step 3.1)
+- If an argument **ends with `.md`**: attempt **file-mode** (Step 2.1)
+- If an argument was provided **but does not end with `.md`**: treat it as a feature title and proceed to **synthesis-mode** (Step 3.1)
 
-1. **Read the file:** Use the Read tool to load the entire file content.
+## File-mode (when argument is a `.md` file path)
 
-2. **Validate required sections:** Check that the file contains all seven required section headings (case-sensitive, must be exact):
-   - `## Problem Statement`
-   - `## Solution`
-   - `## User Stories`
-   - `## Implementation Decisions`
-   - `## Testing Decisions`
-   - `## Out of Scope`
-   - `## Further Notes`
-   
-   If any section is missing:
-   - List the missing sections to the user
-   - Halt without filing the issue
-   
-   If all sections are present, proceed to step 3.
+### Step 2.1 — Read the file
 
-3. **Extract the H1 title:** Search the file for the first line matching the pattern `# <title>` (a single hash followed by a space and text).
-   - If found, extract the title text (the part after `# `)
-   - If not found, report "Error: no H1 heading found in file" and halt without filing
-   
-4. **File the issue:** Execute the command:
-   ```
-   gh issue create --title "PRD: <extracted-title>" --body-file <absolute-path-to-file> --assignee @me
-   ```
-   Use the absolute path to the file. Capture the command output.
+Use the Read tool to load the entire file content from the provided path.
 
-5. **Report result:** Print the returned issue URL from the command output. The output from `gh issue create` will contain a line like `https://github.com/...`. Extract and print only this URL.
+### Step 2.2 — Validate required sections
 
-### Synthesis-mode (no argument)
+Check that the file contains all seven required section headings (case-sensitive, must be exact):
+- `## Problem Statement`
+- `## Solution`
+- `## User Stories`
+- `## Implementation Decisions`
+- `## Testing Decisions`
+- `## Out of Scope`
+- `## Further Notes`
 
-When invoked with no argument or when file-mode validation fails:
+If any section is missing:
+- List the missing sections to the user
+- Halt without filing the issue
 
-1. **Infer the feature title:** If no explicit title was provided as an
-   argument, use the current conversation context to infer a clear,
-   concise feature title.
+If all sections are present, proceed to Step 2.3.
 
-2. **Invoke prd-researcher (first pass):** Call the `prd-researcher`
-   agent with the feature title, passing the current conversation
-   context. The agent returns a module sketch.
+### Step 2.3 — Extract the H1 title
 
-3. **Ask confirmation questions:** Relay the sketch to the developer
-   and ask, in one turn:
-   - Do these modules match your expectations?
-   - Which modules do you want tests written for?
+Search the file for the first line matching the pattern `# <title>` (a single hash followed by a space and text).
 
-4. **Invoke prd-researcher (second pass):** Call the `prd-researcher`
-   agent again with:
-   - The feature title
-   - The module sketch
-   - The developer's answers to the two questions
-   
-   The agent writes the full PRD and files the GitHub issue, returning
-   the issue URL.
+If found, extract the title text (the part after `# `).
 
-5. **Report result:** Print the returned issue URL.
+If not found, report "Error: no H1 heading found in file" and halt without filing.
+
+### Step 2.4 — File the issue
+
+Execute the command:
+```
+gh issue create --title "PRD: <extracted-title>" --body-file <absolute-path-to-file> --assignee @me
+```
+
+Use the absolute path to the file. Capture the command output.
+
+### Step 2.5 — Report result
+
+Extract the issue URL from the command output (a line like `https://github.com/...`). Print only this URL.
+
+## Synthesis-mode (when no argument or argument is not a `.md` file)
+
+### Step 3.1 — Infer feature title
+
+If no explicit title was provided as an argument, use the current
+conversation context to infer a clear, concise feature title.
+
+If an argument was provided but it's not a file path, treat it as the
+feature title.
+
+### Step 3.2 — Invoke prd-researcher (first pass)
+
+Call the `prd-researcher` agent with the feature title, passing the
+current conversation context. The agent returns a module sketch.
+
+### Step 3.3 — Ask confirmation questions
+
+Relay the sketch to the developer and ask, in one turn:
+- Do these modules match your expectations?
+- Which modules do you want tests written for?
+
+### Step 3.4 — Invoke prd-researcher (second pass)
+
+Call the `prd-researcher` agent again with:
+- The feature title
+- The module sketch
+- The developer's answers to the two questions
+
+The agent writes the full PRD and files the GitHub issue, returning
+the issue URL.
+
+### Step 3.5 — Report result
+
+Print the returned issue URL.
