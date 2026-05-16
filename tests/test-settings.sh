@@ -28,6 +28,10 @@ check_criterion 'settings.local.json allows Skill(ywflow:commit)' \
 check_criterion 'settings.local.json has no stale eval-run Bash entries' \
     "! jq -r '.permissions.allow[]' '$SETTINGS_LOCAL' | grep -qE '^Bash\(find ~/.claude|^Bash\(find /mnt/|^Bash\(mkdir -p /mnt/|^Bash\(cd /home/mans/\.claude/plugins'"
 
+# Criterion 3: settings.json hook command uses ${CLAUDE_PLUGIN_ROOT}, not a hardcoded absolute path
+check_criterion 'settings.json hook command uses ${CLAUDE_PLUGIN_ROOT}/hooks/post-edit-lint.sh' \
+    "[ \"\$(jq -r '.hooks.PostToolUse[0].hooks[0].command' '$SETTINGS_JSON')\" = '\${CLAUDE_PLUGIN_ROOT}/hooks/post-edit-lint.sh' ]"
+
 echo ""
 if [ $ERRORS -eq 0 ]; then
     echo "All settings tests passed."
