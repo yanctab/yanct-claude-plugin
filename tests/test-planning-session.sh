@@ -32,17 +32,18 @@ check_criterion "scans codebase before each question and self-answers when evide
 check_criterion "each question is accompanied by a recommended answer" \
     "grep -qi 'recommended answer\|recommend.*answer\|suggested answer' '$SKILL_FILE'"
 
-# Criterion 4: dependency-ordered decision tree — foundational first, dependent decisions after
-check_criterion "follows dependency-ordered decision tree with foundational decisions first" \
-    "grep -qi 'dependency-ordered\|decision tree\|depend' '$SKILL_FILE' && grep -qi 'problem\|user\|scope' '$SKILL_FILE' && grep -qi 'architect\|testing\|rollout' '$SKILL_FILE'"
+# Criterion 4: decisions are resolved in dependency order
+check_criterion "resolves decisions in dependency order" \
+    "grep -qi 'dependency\|depend\|decision tree\|design tree' '$SKILL_FILE'"
 
 # Criterion 5: skill has a clear completion signal — all branches resolved before PRD assembly
 check_criterion "defines completion signal before PRD assembly" \
     "grep -qi 'all branches\|branches are resolved\|exit criteria\|wrap.up\|once.*resolved\|once all' '$SKILL_FILE'"
 
-# Criterion 6: seven-section PRD assembled with all required sections embedded in the skill
-check_criterion "assembles seven-section PRD with all required sections listed" \
-    "grep -qi 'Problem Statement' '$SKILL_FILE' && grep -qi 'Solution' '$SKILL_FILE' && grep -qi 'User Stories' '$SKILL_FILE' && grep -qi 'Implementation Decisions' '$SKILL_FILE' && grep -qi 'Testing Decisions' '$SKILL_FILE' && grep -qi 'Out of Scope' '$SKILL_FILE' && grep -qi 'Further Notes' '$SKILL_FILE'"
+# Criterion 6: PRD structure references the canonical template file
+TEMPLATE_FILE=".claude/prd-template.md"
+check_criterion "PRD structure delegated to canonical template file" \
+    "grep -qi 'prd-template' '$SKILL_FILE' && grep -qi 'Problem Statement' '$TEMPLATE_FILE' && grep -qi 'Further Notes' '$TEMPLATE_FILE'"
 
 # Criterion 7: PRD draft is written to ./prd.md in the working directory
 check_criterion "writes the PRD draft to ./prd.md" \

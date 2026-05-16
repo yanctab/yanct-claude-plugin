@@ -11,18 +11,6 @@ Ask the questions one at a time.
 
 If a question can be answered by exploring the codebase, explore the codebase instead of asking.
 
-Once all branches are resolved, write `./prd.md` containing the final solution. The file must include all seven required sections — missing any one will cause `/new-prd` to reject it:
-
-```
-# <Feature Title>
-
-## Problem Statement
-## Solution
-## User Stories
-## Implementation Decisions
-## Testing Decisions
-## Out of Scope
-## Further Notes
-```
+Once all branches are resolved, write `./prd.md` containing the final solution. Use `.claude/prd-template.md` as the structure — `/new-prd` will reject the file if any required section is missing.
 
 Then invoke the `new-prd` skill in file-mode by passing `./prd.md` as the argument.
