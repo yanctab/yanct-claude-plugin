@@ -40,6 +40,10 @@ check_criterion "follows dependency-ordered decision tree with foundational deci
 check_criterion "defines explicit exit criteria and declares wrap-up" \
     "grep -qi 'exit criteria' '$SKILL_FILE' && grep -qi 'wrap.up\|wrap up' '$SKILL_FILE'"
 
+# Criterion 6: seven-section PRD assembled with embedded section list; does NOT call prd-researcher
+check_criterion "assembles seven-section PRD with embedded sections and does not call prd-researcher" \
+    "grep -qi 'Problem Statement' '$SKILL_FILE' && grep -qi 'Solution' '$SKILL_FILE' && grep -qi 'User Stories' '$SKILL_FILE' && grep -qi 'Implementation Decisions' '$SKILL_FILE' && grep -qi 'Testing Decisions' '$SKILL_FILE' && grep -qi 'Out of Scope' '$SKILL_FILE' && grep -qi 'Further Notes' '$SKILL_FILE' && grep -qi 'NOT.*prd-researcher\|Do NOT call.*prd-researcher' '$SKILL_FILE'"
+
 echo ""
 if [ $ERRORS -eq 0 ]; then
     echo "All tests passed."

@@ -50,3 +50,44 @@ The exit criteria are: all decision-tree branches resolved with no open
 questions remaining. When every phase (foundational, architecture, testing,
 rollout) is complete and the user has confirmed their answers, declare
 that you are entering wrap-up before assembling the PRD.
+
+## PRD Assembly
+
+Do NOT call the `prd-researcher` agent. Assemble the PRD yourself using
+the seven sections below, populated from the decisions collected during
+the session.
+
+Use this exact section structure:
+
+```
+# <Feature Title>
+
+## Problem Statement
+
+<Summarize the core problem, who has it, why it matters>
+
+## Solution
+
+<Describe the proposed solution and how it addresses the problem>
+
+## User Stories
+
+- As a [role], I want [capability], so that [benefit]
+- <Additional user stories as needed>
+
+## Implementation Decisions
+
+<Describe the architecture, design pattern, and key technical choices>
+
+## Testing Decisions
+
+<Outline the test strategy, critical scenarios, and test framework>
+
+## Out of Scope
+
+<List what is explicitly out of scope>
+
+## Further Notes
+
+<Any additional context, links, or notes>
+```
