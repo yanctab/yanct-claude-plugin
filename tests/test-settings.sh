@@ -32,6 +32,18 @@ check_criterion 'settings.local.json has no stale eval-run Bash entries' \
 check_criterion 'settings.json hook command uses ${CLAUDE_PLUGIN_ROOT}/hooks/post-edit-lint.sh' \
     "[ \"\$(jq -r '.hooks.PostToolUse[0].hooks[0].command' '$SETTINGS_JSON')\" = '\${CLAUDE_PLUGIN_ROOT}/hooks/post-edit-lint.sh' ]"
 
+# Criterion 4: no other entries added or removed — settings.local.json has exactly 11 allow entries
+check_criterion 'settings.local.json has exactly 11 allow entries (10 Bash + 1 Skill)' \
+    "[ \"\$(jq '.permissions.allow | length' '$SETTINGS_LOCAL')\" = '11' ]"
+
+# Criterion 4: settings.json permissions allow array unchanged — exactly 9 entries
+check_criterion 'settings.json has exactly 9 allow entries (unchanged)' \
+    "[ \"\$(jq '.permissions.allow | length' '$SETTINGS_JSON')\" = '9' ]"
+
+# Criterion 4: settings.json hook structure unchanged — exactly 1 PostToolUse rule
+check_criterion 'settings.json has exactly 1 PostToolUse rule (unchanged)' \
+    "[ \"\$(jq '.hooks.PostToolUse | length' '$SETTINGS_JSON')\" = '1' ]"
+
 echo ""
 if [ $ERRORS -eq 0 ]; then
     echo "All settings tests passed."
