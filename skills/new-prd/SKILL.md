@@ -21,6 +21,10 @@ Check if the user provided an argument when invoking `/new-prd`:
 
 ## File-mode (when argument is a `.md` file path)
 
+**Important:** File-mode reads and validates the PRD directly from the file.
+Do NOT invoke the `prd-researcher` agent in file-mode — only validate,
+extract, and file.
+
 ### Step 2.1 — Read the file
 
 Use the Read tool to load the entire file content from the provided path.
