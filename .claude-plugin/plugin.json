@@ -1,6 +1,6 @@
 {
   "name": "ywflow",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Repeatable, deterministic development workflow for new projects via a Makefile contract",
   "author": {
     "name": "yanctab"
