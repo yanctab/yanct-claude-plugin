@@ -11,12 +11,7 @@
       "Bash(gh auth:*)",
       "Bash(GIT_SSH_COMMAND=\"ssh -o ConnectTimeout=5\" git push:*)",
       "Bash(cp:*)",
-      "Skill(ywflow:commit)",
-      "Bash(find ~/.claude/projects -name \"*workspace\" -type d 2>/dev/null | head -20)",
-      "Bash(find /mnt/workspace/mans/claude/yanct-claude-plugin -name \"*workspace*\" -o -name \"*eval*\" 2>/dev/null | head -20)",
-      "Bash(mkdir -p /mnt/workspace/mans/claude/yanct-claude-plugin/skills/execute/evals/files && mkdir -p /mnt/workspace/mans/claude/yanct-claude-plugin/execute-workspace/iteration-1/foundation-gate/with_skill/outputs && mkdir -p /mnt/workspace/mans/claude/yanct-claude-plugin/execute-workspace/iteration-1/foundation-gate/without_skill/outputs && mkdir -p /mnt/workspace/mans/claude/yanct-claude-plugin/execute-workspace/iteration-1/implementation-kickoff/with_skill/outputs && mkdir -p /mnt/workspace/mans/claude/yanct-claude-plugin/execute-workspace/iteration-1/implementation-kickoff/without_skill/outputs && mkdir -p /mnt/workspace/mans/claude/yanct-claude-plugin/execute-workspace/iteration-1/pr-merge-checkpoint/with_skill/outputs && mkdir -p /mnt/workspace/mans/claude/yanct-claude-plugin/execute-workspace/iteration-1/pr-merge-checkpoint/without_skill/outputs && echo \"directories created\")",
-      "Bash(cd /home/mans/.claude/plugins/cache/claude-plugins-official/skill-creator/205b6e0b3036/skills/skill-creator && python -m scripts.aggregate_benchmark /mnt/workspace/mans/claude/yanct-claude-plugin/execute-workspace/iteration-1 --skill-name execute 2>&1)",
-      "Bash(cd /home/mans/.claude/plugins/cache/claude-plugins-official/skill-creator/205b6e0b3036/skills/skill-creator && python3 -m scripts.aggregate_benchmark /mnt/workspace/mans/claude/yanct-claude-plugin/execute-workspace/iteration-1 --skill-name execute 2>&1)"
+      "Skill(ywflow:commit)"
     ]
   }
 }

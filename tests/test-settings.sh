@@ -24,6 +24,10 @@ check_criterion() {
 check_criterion 'settings.local.json allows Skill(ywflow:commit)' \
     "jq -e '.permissions.allow | contains([\"Skill(ywflow:commit)\"])' '$SETTINGS_LOCAL' > /dev/null"
 
+# Criterion 2: three stale Bash(...) entries are removed — no entry starts with "Bash(find" or "Bash(mkdir -p /mnt/" or "Bash(cd /home/mans/.claude/plugins"
+check_criterion 'settings.local.json has no stale eval-run Bash entries' \
+    "! jq -r '.permissions.allow[]' '$SETTINGS_LOCAL' | grep -qE '^Bash\(find ~/.claude|^Bash\(find /mnt/|^Bash\(mkdir -p /mnt/|^Bash\(cd /home/mans/\.claude/plugins'"
+
 echo ""
 if [ $ERRORS -eq 0 ]; then
     echo "All settings tests passed."
