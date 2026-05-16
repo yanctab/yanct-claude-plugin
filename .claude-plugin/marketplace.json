@@ -1,20 +1,20 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "yanct-claude-plugin",
+  "name": "ywflow",
   "description": "Repeatable, deterministic development workflow for new projects via a Makefile contract",
   "owner": {
     "name": "yanctab"
   },
   "plugins": [
     {
-      "name": "yanct-claude-plugin",
+      "name": "ywflow",
       "description": "Repeatable, deterministic development workflow for new projects via a Makefile contract",
       "source": {
         "source": "url",
-        "url": "https://github.com/yanctab/yanct-claude-plugin.git"
+        "url": "https://github.com/yanctab/ywflow-claude-plugin.git"
       },
       "category": "development",
-      "homepage": "https://github.com/yanctab/yanct-claude-plugin"
+      "homepage": "https://github.com/yanctab/ywflow-claude-plugin"
     }
   ]
 }

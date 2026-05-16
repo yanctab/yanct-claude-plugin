@@ -35,6 +35,9 @@ test:
 	@echo ""
 	@echo "Running skill tests..."
 	@bash tests/test-planning-session.sh
+	@echo ""
+	@echo "Running manifest tests..."
+	@bash tests/test-manifests.sh
 
 ## clean - nothing to clean for a plugin
 clean:
